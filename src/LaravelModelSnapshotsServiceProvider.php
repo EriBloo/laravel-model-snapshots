@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace EriBloo\LaravelModelSnapshots;
 
-use EriBloo\LaravelModelSnapshots\Commands\LaravelModelSnapshotsCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -20,8 +19,6 @@ class LaravelModelSnapshotsServiceProvider extends PackageServiceProvider
         $package
             ->name('laravel-model-snapshots')
             ->hasConfigFile()
-            ->hasViews()
-            ->hasMigration('create_laravel-model-snapshots_table')
-            ->hasCommand(LaravelModelSnapshotsCommand::class);
+            ->hasMigration('create_model_snapshots_tables');
     }
 }
