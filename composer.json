@@ -4,7 +4,11 @@
     "keywords": [
         "EriBloo",
         "laravel",
-        "laravel-model-snapshots"
+        "laravel-model-snapshots",
+        "model",
+        "snapshot",
+        "version",
+        "history"
     ],
     "homepage": "https://github.com/eribloo/laravel-model-snapshots",
     "license": "MIT",
@@ -34,8 +38,7 @@
     },
     "autoload": {
         "psr-4": {
-            "EriBloo\\LaravelModelSnapshots\\": "src",
-            "EriBloo\\LaravelModelSnapshots\\Database\\Factories\\": "database/factories"
+            "EriBloo\\LaravelModelSnapshots\\": "src"
         }
     },
     "autoload-dev": {
