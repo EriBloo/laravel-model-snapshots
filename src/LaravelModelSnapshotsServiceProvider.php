@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace EriBloo\LaravelModelSnapshots;
 
+use EriBloo\LaravelModelSnapshots\Commands\LaravelModelSnapshotsCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use EriBloo\LaravelModelSnapshots\Commands\LaravelModelSnapshotsCommand;
 
 class LaravelModelSnapshotsServiceProvider extends PackageServiceProvider
 {

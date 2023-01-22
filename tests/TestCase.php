@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace EriBloo\LaravelModelSnapshots\Tests;
 
+use EriBloo\LaravelModelSnapshots\LaravelModelSnapshotsServiceProvider;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Orchestra\Testbench\TestCase as Orchestra;
-use EriBloo\LaravelModelSnapshots\LaravelModelSnapshotsServiceProvider;
 
 class TestCase extends Orchestra
 {
