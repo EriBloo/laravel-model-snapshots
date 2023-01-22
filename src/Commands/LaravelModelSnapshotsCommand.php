@@ -1,12 +1,12 @@
 <?php
 
-namespace VendorName\Skeleton\Commands;
+namespace EriBloo\LaravelModelSnapshots\Commands;
 
 use Illuminate\Console\Command;
 
-class SkeletonCommand extends Command
+class LaravelModelSnapshotsCommand extends Command
 {
-    public $signature = 'skeleton';
+    public $signature = 'laravel-model-snapshots';
 
     public $description = 'My command';
 
