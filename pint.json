@@ -1,0 +1,11 @@
+{
+    "preset": "laravel",
+    "rules": {
+        "combine_consecutive_issets": true,
+        "combine_consecutive_unsets": true,
+        "concat_space": true,
+        "declare_parentheses": true,
+        "declare_strict_types": true,
+        "explicit_string_variable": true
+    }
+}
