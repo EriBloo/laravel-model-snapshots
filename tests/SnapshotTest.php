@@ -30,13 +30,13 @@ it('creates snapshot', function () {
 
 it('versions properly', function () {
     $this->model->createSnapshot();
-    expect($this->model->getSnapshot()->snapshot_version)
+    expect($this->model->getSnapshot()->getSnapshotVersion())
         ->toBe('1');
 
     Carbon::setTestNow($this->now->addSecond());
 
     $this->model->createSnapshot();
-    expect($this->model->getSnapshot()->snapshot_version)
+    expect($this->model->getSnapshot()->getSnapshotVersion())
         ->toBe('2');
 });
 

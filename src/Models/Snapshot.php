@@ -18,6 +18,8 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  * @property string $snapshot_version
  * @property Carbon $created_at
  * @property Carbon $updated_at
+ *
+ * @implements SnapshotInterface
  */
 class Snapshot extends Model implements SnapshotInterface
 {
@@ -41,6 +43,22 @@ class Snapshot extends Model implements SnapshotInterface
     }
 
     /**
+     * @return Model
+     */
+    public function getModelSnapshot(): Model
+    {
+        return $this->snapshot;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSnapshotVersion(): string
+    {
+        return $this->snapshot_version;
+    }
+
+    /**
      * @return Attribute
      */
     public function snapshot(): Attribute
@@ -54,11 +72,12 @@ class Snapshot extends Model implements SnapshotInterface
                 return $model;
             },
             set: static function (Model $model): string {
+                $clone = clone $model;
                 if (config('model-snapshots.should_snapshot_hidden')) {
-                    $model->setHidden([]);
+                    $clone->setHidden([]);
                 }
 
-                return $model->toJson();
+                return $clone->toJson();
             }
         );
     }
