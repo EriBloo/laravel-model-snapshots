@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace EriBloo\LaravelModelSnapshots\Tests\TestSupport\Database\Factories;
 
-use EriBloo\LaravelModelSnapshots\Tests\TestSupport\Models\TestModel;
+use EriBloo\LaravelModelSnapshots\Tests\TestSupport\Models\TestCreatesSnapshotsModel;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<TestModel>
+ * @extends Factory<TestCreatesSnapshotsModel>
  */
-class TestModelFactory extends Factory
+class TestCreatesSnapshotsModelFactory extends Factory
 {
     /**
      * @return array<string>
