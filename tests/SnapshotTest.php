@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use EriBloo\LaravelModelSnapshots\Models\Snapshot;
 use EriBloo\LaravelModelSnapshots\Tests\TestSupport\Models\TestCreatesSnapshotsModel;
 use EriBloo\LaravelModelSnapshots\Tests\TestSupport\Models\TestHasSnapshotRelationsModel;
 use Illuminate\Support\Carbon;
@@ -49,5 +50,8 @@ it('creates proper relations with snapshots', function () {
     expect($test->testCreatesSnapshotsModels()->first())
         ->id->toBe($snapshot->snapshot->id)
         ->name->toBe($snapshot->snapshot->name)
-        ->content->toBe($snapshot->snapshot->content);
+        ->content->toBe($snapshot->snapshot->content)
+        ->and($test->testCreatesSnapshots()->first())
+        ->toBeInstanceOf(Snapshot::class)
+        ->snapshot_version->toBe('1');
 });

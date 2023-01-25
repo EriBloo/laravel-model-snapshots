@@ -8,7 +8,7 @@ use EriBloo\LaravelModelSnapshots\Models\Snapshot;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
-class MorphSnapshots extends MorphToMany
+class MorphSnapshotModels extends MorphToMany
 {
     public function __construct(protected string $snapshotClass, Model $parent)
     {
