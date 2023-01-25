@@ -46,8 +46,14 @@ class Snapshot extends Model implements SnapshotInterface
     public function snapshot(): Attribute
     {
         return Attribute::make(
-            get: static fn (string $value, $attributes) => (new $attributes['model_type'])->fromJson($value),
-            set: static function (Model $model) {
+            get: static function (string $value, $attributes): Model {
+                /** @var Model $model */
+                $model = new $attributes['model_type'];
+                $model->forceFill(json_decode($value, true, 512, JSON_THROW_ON_ERROR));
+
+                return $model;
+            },
+            set: static function (Model $model): string {
                 if (config('model-snapshots.should_snapshot_hidden')) {
                     $model->setHidden([]);
                 }
