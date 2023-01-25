@@ -21,7 +21,7 @@ trait CreatesSnapshots
     public function createSnapshot(): Snapshot
     {
         /** @var SnapshotInterface $snapshotClass */
-        $snapshotClass = config('model-snapshots.snapshot_class');
+        $snapshotClass = $this->getSnapshotClass();
         /** @var SnapshotInterface|null $currentSnapshot */
         $currentSnapshot = $this->getSnapshot();
         $currentVersion = $currentSnapshot?->getSnapshotVersion();
@@ -34,6 +34,14 @@ trait CreatesSnapshots
         $this->snapshots()->save($snapshot);
 
         return $snapshot;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getSnapshotClass(): string
+    {
+        return config(config('model-snapshots.snapshot_class'), Snapshot::class);
     }
 
     /**
@@ -62,6 +70,6 @@ trait CreatesSnapshots
      */
     public function snapshots(): MorphMany
     {
-        return $this->morphMany(config('model-snapshots.snapshot_class'), 'model');
+        return $this->morphMany($this->getSnapshotClass(), 'model');
     }
 }
