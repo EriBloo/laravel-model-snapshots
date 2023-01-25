@@ -22,9 +22,9 @@ trait CreatesSnapshots
     {
         /** @var SnapshotInterface $snapshotClass */
         $snapshotClass = config('model-snapshots.snapshot_class');
-        /** @var Snapshot|null $currentSnapshot */
+        /** @var SnapshotInterface|null $currentSnapshot */
         $currentSnapshot = $this->getSnapshot();
-        $currentVersion = $currentSnapshot?->snapshot_version;
+        $currentVersion = $currentSnapshot?->getSnapshotVersion();
         $versionist = $this->getVersionist();
 
         $snapshot = $snapshotClass::newSnapshotForModel(
@@ -40,7 +40,7 @@ trait CreatesSnapshots
      * Returns last snapshot or snapshot by version.
      *
      * @param  string|null  $version
-     * @return Snapshot|null
+     * @return SnapshotInterface|null
      */
     public function getSnapshot(string $version = null): Model|null
     {

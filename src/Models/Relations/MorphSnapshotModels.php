@@ -4,16 +4,20 @@ declare(strict_types=1);
 
 namespace EriBloo\LaravelModelSnapshots\Models\Relations;
 
-use EriBloo\LaravelModelSnapshots\Models\Snapshot;
+use EriBloo\LaravelModelSnapshots\Contracts\Snapshot;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 class MorphSnapshotModels extends MorphToMany
 {
+    /**
+     * @param  string  $snapshotClass
+     * @param  Model  $parent
+     */
     public function __construct(protected string $snapshotClass, Model $parent)
     {
         parent::__construct(
-            query:Snapshot::query(),
+            query:config('model-snapshots.snapshot_class')::query(),
             parent:$parent,
             name:'model',
             table:'model_snapshots_relations',
@@ -24,6 +28,9 @@ class MorphSnapshotModels extends MorphToMany
         );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function addEagerConstraints(array $models): void
     {
         parent::addEagerConstraints($models);
@@ -31,9 +38,12 @@ class MorphSnapshotModels extends MorphToMany
         $this->query->where('model_snapshots.model_type', $this->snapshotClass);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function get($columns = ['*'])
     {
         return parent::get(['model_snapshots.model_type', 'model_snapshots.snapshot'])
-            ->map(fn (Snapshot $snapshot) => $snapshot->snapshot);
+            ->map(fn (Snapshot $snapshot) => $snapshot->getModelSnapshot());
     }
 }

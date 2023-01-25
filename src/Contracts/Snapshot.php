@@ -14,4 +14,14 @@ interface Snapshot
      * @return static
      */
     public static function newSnapshotForModel(Model $model, string $version): static;
+
+    /**
+     * @return Model
+     */
+    public function getModelSnapshot(): Model;
+
+    /**
+     * @return string
+     */
+    public function getSnapshotVersion(): string;
 }
