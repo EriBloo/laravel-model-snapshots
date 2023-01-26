@@ -53,7 +53,11 @@ it('creates proper relations with snapshots', function () {
         ->content->toBe($snapshot->snapshot->content)
         ->and($test->testCreatesSnapshots()->first())
         ->toBeInstanceOf(Snapshot::class)
-        ->snapshot_version->toBe('1');
+        ->snapshot_version->toBe('1')
+        ->and($test->testCreatesSnapshotsModel()->first())
+        ->id->toBe($snapshot->snapshot->id)
+        ->name->toBe($snapshot->snapshot->name)
+        ->content->toBe($snapshot->snapshot->content);
 });
 
 it('returns correct snapshots by version and date', function () {
