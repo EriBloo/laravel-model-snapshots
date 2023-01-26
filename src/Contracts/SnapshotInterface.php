@@ -6,7 +6,7 @@ namespace EriBloo\LaravelModelSnapshots\Contracts;
 
 use Illuminate\Database\Eloquent\Model;
 
-interface Snapshot
+interface SnapshotInterface
 {
     /**
      * @param  Model  $model

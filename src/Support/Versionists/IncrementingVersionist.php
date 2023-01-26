@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace EriBloo\LaravelModelSnapshots\Support\Versionists;
 
-use EriBloo\LaravelModelSnapshots\Contracts\Versionist;
+use EriBloo\LaravelModelSnapshots\Contracts\VersionistInterface;
 
-class IncrementingVersionist implements Versionist
+class IncrementingVersionist implements VersionistInterface
 {
     /**
      * @return string
