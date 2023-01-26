@@ -18,7 +18,7 @@ interface Snapshot
     /**
      * @return Model
      */
-    public function getModelSnapshot(): Model;
+    public function getSnapshotModel(): Model;
 
     /**
      * @return string

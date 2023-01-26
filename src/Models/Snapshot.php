@@ -11,13 +11,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 /**
- * @property int $id
+ * @property-read int $id
  * @property int $model_id
  * @property string $model_type
  * @property Model $snapshot
  * @property string $snapshot_version
- * @property Carbon $created_at
- * @property Carbon $updated_at
+ * @property-read Carbon $created_at
+ * @property-read Carbon $updated_at
  *
  * @implements SnapshotInterface
  */
@@ -45,7 +45,7 @@ class Snapshot extends Model implements SnapshotInterface
     /**
      * @return Model
      */
-    public function getModelSnapshot(): Model
+    public function getSnapshotModel(): Model
     {
         return $this->snapshot;
     }

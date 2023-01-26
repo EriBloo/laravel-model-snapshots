@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace EriBloo\LaravelModelSnapshots\Concerns;
 
 use EriBloo\LaravelModelSnapshots\Contracts\Snapshot as SnapshotInterface;
-use EriBloo\LaravelModelSnapshots\Contracts\Versionist;
+use EriBloo\LaravelModelSnapshots\Contracts\Versionist as VersionistInterface;
 use EriBloo\LaravelModelSnapshots\Models\Snapshot;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -16,14 +16,13 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 trait CreatesSnapshots
 {
     /**
-     * @return Snapshot
+     * @return SnapshotInterface
      */
-    public function createSnapshot(): Snapshot
+    public function createSnapshot(): SnapshotInterface
     {
-        /** @var SnapshotInterface $snapshotClass */
+        /** @var class-string<SnapshotInterface> $snapshotClass */
         $snapshotClass = $this->getSnapshotClass();
-        /** @var SnapshotInterface|null $currentSnapshot */
-        $currentSnapshot = $this->getSnapshot();
+        $currentSnapshot = $this->getLatestSnapshot();
         $currentVersion = $currentSnapshot?->getSnapshotVersion();
         $versionist = $this->getVersionist();
 
@@ -37,32 +36,34 @@ trait CreatesSnapshots
     }
 
     /**
-     * @return string
+     * @return class-string<SnapshotInterface>
      */
     protected function getSnapshotClass(): string
     {
-        return config(config('model-snapshots.snapshot_class'), Snapshot::class);
+        return config('model-snapshots.snapshot_class', Snapshot::class);
     }
 
     /**
-     * Returns last snapshot or snapshot by version.
+     * Returns latest snapshot.
      *
-     * @param  string|null  $version
      * @return SnapshotInterface|null
      */
-    public function getSnapshot(string $version = null): Model|null
+    public function getLatestSnapshot(): SnapshotInterface|null
     {
-        return $version ?
-            $this->snapshots()->where('snapshot_version', $version)->first() :
-            $this->snapshots()->latest()->first();
+        /** @var SnapshotInterface|null $snapshot */
+        $snapshot = $this->snapshots()->latest()->first();
+
+        return $snapshot;
     }
 
     /**
-     * @return Versionist
+     * Get Versionist responsible for versioning
+     *
+     * @return VersionistInterface
      */
-    public function getVersionist(): Versionist
+    public function getVersionist(): VersionistInterface
     {
-        return app(Versionist::class);
+        return app(VersionistInterface::class);
     }
 
     /**
