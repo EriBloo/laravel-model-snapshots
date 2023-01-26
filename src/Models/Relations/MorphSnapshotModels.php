@@ -18,10 +18,10 @@ class MorphSnapshotModels extends MorphToMany
     public function __construct(protected string $snapshotClass, Model $parent)
     {
         parent::__construct(
-            query:config('model-snapshots.snapshot_class')::query(),
-            parent:$parent,
-            name:'model',
-            table:'model_snapshots_relations',
+            query: config('model-snapshots.snapshot_class')::query(),
+            parent: $parent,
+            name: 'model',
+            table: 'model_snapshots_relations',
             foreignPivotKey: 'model_id',
             relatedPivotKey: 'snapshot_id',
             parentKey: 'id',
