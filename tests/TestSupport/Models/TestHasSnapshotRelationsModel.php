@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace EriBloo\LaravelModelSnapshots\Tests\TestSupport\Models;
 
 use EriBloo\LaravelModelSnapshots\Concerns\ConnectsToSnapshots;
+use EriBloo\LaravelModelSnapshots\Models\Relations\MorphSnapshotModel;
 use EriBloo\LaravelModelSnapshots\Models\Relations\MorphSnapshotModels;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
@@ -20,6 +21,11 @@ class TestHasSnapshotRelationsModel extends Model
     public function testCreatesSnapshotsModels(): MorphSnapshotModels
     {
         return $this->morphSnapshotModels(TestCreatesSnapshotsModel::class);
+    }
+
+    public function testCreatesSnapshotsModel(): MorphSnapshotModel
+    {
+        return $this->morphSnapshotModel(TestCreatesSnapshotsModel::class);
     }
 
     public function testCreatesSnapshots(): MorphToMany
