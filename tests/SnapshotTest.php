@@ -17,7 +17,7 @@ beforeEach(function () {
 
 it('creates snapshot', function () {
     $this->model->createSnapshot();
-    $snapshot = $this->model->getSnapshot();
+    $snapshot = $this->model->getLatestSnapshot();
 
     expect($snapshot)
         ->model_id->toBe($this->model->id)
@@ -30,13 +30,13 @@ it('creates snapshot', function () {
 
 it('versions properly', function () {
     $this->model->createSnapshot();
-    expect($this->model->getSnapshot()->getSnapshotVersion())
+    expect($this->model->getLatestSnapshot()->getSnapshotVersion())
         ->toBe('1');
 
     Carbon::setTestNow($this->now->addSecond());
 
     $this->model->createSnapshot();
-    expect($this->model->getSnapshot()->getSnapshotVersion())
+    expect($this->model->getLatestSnapshot()->getSnapshotVersion())
         ->toBe('2');
 });
 
@@ -45,7 +45,7 @@ it('creates proper relations with snapshots', function () {
     $test = TestHasSnapshotRelationsModel::create(['name' => 'Test']);
     $this->model->createSnapshot();
 
-    $snapshot = $this->model->getSnapshot('1');
+    $snapshot = $this->model->getLatestSnapshot();
     $test->testCreatesSnapshotsModels()->attach($snapshot->id);
     expect($test->testCreatesSnapshotsModels()->first())
         ->id->toBe($snapshot->snapshot->id)
