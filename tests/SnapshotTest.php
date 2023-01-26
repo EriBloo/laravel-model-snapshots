@@ -8,7 +8,7 @@ use EriBloo\LaravelModelSnapshots\Tests\TestSupport\Models\TestHasSnapshotRelati
 use Illuminate\Support\Carbon;
 
 beforeEach(function () {
-    $this->now = now();
+    $this->now = Carbon::now()->toImmutable();
     Carbon::setTestNow($this->now);
 
     $this->attributes = TestCreatesSnapshotsModel::factory()->raw();
@@ -54,4 +54,18 @@ it('creates proper relations with snapshots', function () {
         ->and($test->testCreatesSnapshots()->first())
         ->toBeInstanceOf(Snapshot::class)
         ->snapshot_version->toBe('1');
+});
+
+it('returns correct snapshots by version and date', function () {
+    for ($i = 1; $i <= 10; $i++) {
+        $this->model->createSnapshot();
+        Carbon::setTestNow($this->now->addMinutes(10 * $i));
+    }
+
+    expect($this->model->getSnapshotByVersion('7'))
+        ->snapshot_version->toBe('7')
+        ->created_at->toDateTimeString()->toBe(Carbon::make($this->now->addMinutes(10 * 6))?->toDateTimeString())
+        ->and($this->model->getSnapshotByDate($this->now->addMinutes(10 * 4 + 5)))
+        ->snapshot_version->toBe('5')
+        ->created_at->toDateTimeString()->toBe(Carbon::make($this->now->addMinutes(10 * 4))?->toDateTimeString());
 });
