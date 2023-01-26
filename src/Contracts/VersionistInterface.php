@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace EriBloo\LaravelModelSnapshots\Contracts;
 
-interface Versionist
+interface VersionistInterface
 {
     /**
      * Get first version id.

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace EriBloo\LaravelModelSnapshots\Concerns;
 
 use Carbon\CarbonInterface;
-use EriBloo\LaravelModelSnapshots\Contracts\Snapshot as SnapshotInterface;
-use EriBloo\LaravelModelSnapshots\Contracts\Versionist as VersionistInterface;
+use EriBloo\LaravelModelSnapshots\Contracts\SnapshotInterface;
+use EriBloo\LaravelModelSnapshots\Contracts\VersionistInterface;
 use EriBloo\LaravelModelSnapshots\Models\Snapshot;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -58,7 +58,7 @@ trait CreatesSnapshots
     }
 
     /**
-     * Get Versionist responsible for versioning
+     * Get VersionistInterface responsible for versioning
      *
      * @return VersionistInterface
      */
