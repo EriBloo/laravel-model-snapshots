@@ -29,10 +29,12 @@ class LaravelModelSnapshotsServiceProvider extends PackageServiceProvider
     public function packageBooted()
     {
         $this->app->bind(
-            VersionistInterface::class, config('model-snapshots.versionist_class', IncrementingVersionist::class)
+            VersionistInterface::class,
+            config('model-snapshots.versionist_class', IncrementingVersionist::class)
         );
         $this->app->bind(
-            SnapshotInterface::class, config('model-snapshots.snapshot_class', Snapshot::class)
+            SnapshotInterface::class,
+            config('model-snapshots.snapshot_class', Snapshot::class)
         );
     }
 }

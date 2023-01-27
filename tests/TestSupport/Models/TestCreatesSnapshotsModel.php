@@ -18,7 +18,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class TestCreatesSnapshotsModel extends Model
 {
-    use HasFactory, CreatesSnapshots;
+    use HasFactory;
+    use CreatesSnapshots;
 
     protected $fillable = [
         'name',

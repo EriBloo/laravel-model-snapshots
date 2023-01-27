@@ -35,7 +35,7 @@ class Snapshot extends Model implements SnapshotInterface
      */
     public static function newSnapshotForModel(Model $model, string $version): static
     {
-        $snapshot = new static;
+        $snapshot = new static();
         $snapshot->snapshot = $model;
         $snapshot->snapshot_version = $version;
 
@@ -66,7 +66,7 @@ class Snapshot extends Model implements SnapshotInterface
         return Attribute::make(
             get: static function (string $value, $attributes): Model {
                 /** @var Model $model */
-                $model = new $attributes['model_type'];
+                $model = new $attributes['model_type']();
                 $model->forceFill(json_decode($value, true, 512, JSON_THROW_ON_ERROR));
 
                 return $model;
