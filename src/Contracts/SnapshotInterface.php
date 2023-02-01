@@ -11,9 +11,9 @@ interface SnapshotInterface
     /**
      * @param  Model  $model
      * @param  string  $version
-     * @return static
+     * @return Model
      */
-    public static function newSnapshotForModel(Model $model, string $version): static;
+    public static function newSnapshotForModel(Model $model, string $version): Model;
 
     /**
      * @return Model

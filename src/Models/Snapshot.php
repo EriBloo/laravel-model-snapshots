@@ -18,8 +18,6 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  * @property string $snapshot_version
  * @property-read Carbon $created_at
  * @property-read Carbon $updated_at
- *
- * @implements SnapshotInterface
  */
 class Snapshot extends Model implements SnapshotInterface
 {
@@ -31,11 +29,11 @@ class Snapshot extends Model implements SnapshotInterface
     /**
      * @param  Model  $model
      * @param  string  $version
-     * @return static
+     * @return Snapshot
      */
-    public static function newSnapshotForModel(Model $model, string $version): static
+    public static function newSnapshotForModel(Model $model, string $version): Snapshot
     {
-        $snapshot = new static();
+        $snapshot = new Snapshot();
         $snapshot->snapshot = $model;
         $snapshot->snapshot_version = $version;
 
