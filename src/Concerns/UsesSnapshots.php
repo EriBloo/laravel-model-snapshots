@@ -20,7 +20,7 @@ trait UsesSnapshots
      */
     public function morphSnapshotModels(string $snapshotClass): MorphSnapshotModels
     {
-        return new MorphSnapshotModels($snapshotClass, $this);
+        return (new MorphSnapshotModels($snapshotClass, $this))->where('model_snapshots.subject_type', $snapshotClass);
     }
 
     /**
@@ -29,7 +29,7 @@ trait UsesSnapshots
      */
     public function morphSnapshotModel(string $snapshotClass): MorphSnapshotModel
     {
-        return new MorphSnapshotModel($snapshotClass, $this);
+        return (new MorphSnapshotModel($snapshotClass, $this))->where('model_snapshots.subject_type', $snapshotClass);
     }
 
     /**

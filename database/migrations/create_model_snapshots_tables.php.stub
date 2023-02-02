@@ -18,7 +18,7 @@ return new class extends Migration
 
         Schema::create('model_snapshots_relations', function (Blueprint $table) {
             $table->morphs('model');
-            $table->foreignId('snapshot_id');
+            $table->foreignId('snapshot_id')->constrained('model_snapshots')->cascadeOnDelete();
         });
     }
 };
