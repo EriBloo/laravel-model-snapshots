@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace EriBloo\LaravelModelSnapshots\Tests\TestSupport\Models;
 
-use EriBloo\LaravelModelSnapshots\Concerns\ConnectsToSnapshots;
+use EriBloo\LaravelModelSnapshots\Concerns\UsesSnapshots;
 use EriBloo\LaravelModelSnapshots\Models\Relations\MorphSnapshotModel;
 use EriBloo\LaravelModelSnapshots\Models\Relations\MorphSnapshotModels;
 use Illuminate\Database\Eloquent\Model;
@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 class TestHasSnapshotRelationsModel extends Model
 {
-    use ConnectsToSnapshots;
+    use UsesSnapshots;
 
     protected $fillable = [
         'name',

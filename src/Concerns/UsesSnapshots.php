@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
 /**
  * @mixin Model
  */
-trait ConnectsToSnapshots
+trait UsesSnapshots
 {
     /**
      * @param  class-string  $snapshotClass
@@ -39,6 +39,6 @@ trait ConnectsToSnapshots
     public function morphSnapshots(string $snapshotClass): MorphToMany
     {
         return $this->morphToMany(config('model-snapshots.snapshot_class'), 'model', 'model_snapshots_relations')
-            ->where('model_snapshots.model_type', $snapshotClass);
+            ->where('model_snapshots.subject_type', $snapshotClass);
     }
 }

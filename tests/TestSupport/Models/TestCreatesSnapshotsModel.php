@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace EriBloo\LaravelModelSnapshots\Tests\TestSupport\Models;
 
 use Carbon\Carbon;
-use EriBloo\LaravelModelSnapshots\Concerns\CreatesSnapshots;
+use EriBloo\LaravelModelSnapshots\Concerns\HasSnapshots;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -19,7 +19,7 @@ use Illuminate\Database\Eloquent\Model;
 class TestCreatesSnapshotsModel extends Model
 {
     use HasFactory;
-    use CreatesSnapshots;
+    use HasSnapshots;
 
     protected $fillable = [
         'name',

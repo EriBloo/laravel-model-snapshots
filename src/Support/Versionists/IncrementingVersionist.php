@@ -18,15 +18,6 @@ class IncrementingVersionist implements VersionistInterface
 
     /**
      * @param  string  $version
-     * @return string|null
-     */
-    public function getPreviousVersion(string $version): ?string
-    {
-        return (string) ((int) $version - 1) ?: null;
-    }
-
-    /**
-     * @param  string  $version
      * @return string
      */
     public function getNextVersion(string $version): string

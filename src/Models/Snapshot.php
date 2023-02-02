@@ -27,36 +27,6 @@ class Snapshot extends Model implements SnapshotInterface
     protected $table = 'model_snapshots';
 
     /**
-     * @param  Model  $model
-     * @param  string  $version
-     * @return Snapshot
-     */
-    public static function newSnapshotForModel(Model $model, string $version): Snapshot
-    {
-        $snapshot = new Snapshot();
-        $snapshot->snapshot = $model;
-        $snapshot->snapshot_version = $version;
-
-        return $snapshot;
-    }
-
-    /**
-     * @return Model
-     */
-    public function getSnapshotModel(): Model
-    {
-        return $this->snapshot;
-    }
-
-    /**
-     * @return string
-     */
-    public function getSnapshotVersion(): string
-    {
-        return $this->snapshot_version;
-    }
-
-    /**
      * @return Attribute
      */
     public function snapshot(): Attribute
@@ -64,7 +34,7 @@ class Snapshot extends Model implements SnapshotInterface
         return Attribute::make(
             get: static function (string $value, $attributes): Model {
                 /** @var Model $model */
-                $model = new $attributes['model_type']();
+                $model = new $attributes['subject_type']();
                 $model->forceFill(json_decode($value, true, 512, JSON_THROW_ON_ERROR));
 
                 return $model;
@@ -81,9 +51,43 @@ class Snapshot extends Model implements SnapshotInterface
     }
 
     /**
+     * @return Model
+     */
+    public function getSnapshotModel(): Model
+    {
+        return $this->snapshot;
+    }
+
+    /**
+     * @param Model $model
+     * @return void
+     */
+    public function setSnapshotModel(Model $model): void
+    {
+        $this->snapshot = $model;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSnapshotVersion(): string
+    {
+        return $this->snapshot_version;
+    }
+
+    /**
+     * @param string $version
+     * @return void
+     */
+    public function setSnapshotVersion(string $version): void
+    {
+        $this->snapshot_version = $version;
+    }
+
+    /**
      * @return MorphTo
      */
-    public function model(): MorphTo
+    public function subject(): MorphTo
     {
         return $this->morphTo();
     }
