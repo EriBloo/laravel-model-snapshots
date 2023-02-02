@@ -19,14 +19,14 @@ class TestCase extends Orchestra
         $migration = include __DIR__.'/../database/migrations/create_model_snapshots_tables.php.stub';
         $migration->up();
 
-        Schema::create('test_creates_snapshots_models', static function (Blueprint $table) {
+        Schema::create('documents', static function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->text('content');
             $table->timestamps();
         });
 
-        Schema::create('test_has_snapshot_relations_models', static function (Blueprint $table) {
+        Schema::create('document_consumers', static function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->timestamps();

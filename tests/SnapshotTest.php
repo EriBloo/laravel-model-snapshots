@@ -3,16 +3,16 @@
 declare(strict_types=1);
 
 use EriBloo\LaravelModelSnapshots\Models\Snapshot;
-use EriBloo\LaravelModelSnapshots\Tests\TestSupport\Models\TestCreatesSnapshotsModel;
-use EriBloo\LaravelModelSnapshots\Tests\TestSupport\Models\TestHasSnapshotRelationsModel;
+use EriBloo\LaravelModelSnapshots\Tests\TestSupport\Models\Document;
+use EriBloo\LaravelModelSnapshots\Tests\TestSupport\Models\DocumentConsumer;
 use Illuminate\Support\Carbon;
 
 beforeEach(function () {
     $this->now = Carbon::now()->toImmutable();
     Carbon::setTestNow($this->now);
 
-    $this->attributes = TestCreatesSnapshotsModel::factory()->raw();
-    $this->model = TestCreatesSnapshotsModel::query()->create($this->attributes);
+    $this->attributes = Document::factory()->raw();
+    $this->model = Document::query()->create($this->attributes);
 });
 
 it('creates snapshot', function () {
@@ -41,8 +41,8 @@ it('versions properly', function () {
 });
 
 it('creates proper relations with snapshots', function () {
-    /** @var TestHasSnapshotRelationsModel $test */
-    $test = TestHasSnapshotRelationsModel::create(['name' => 'Test']);
+    /** @var DocumentConsumer $test */
+    $test = DocumentConsumer::create(['name' => 'Test']);
     snapshot($this->model)->persist();
 
     $snapshot = $this->model->getLatestSnapshot();

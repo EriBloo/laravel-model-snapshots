@@ -10,7 +10,7 @@ use EriBloo\LaravelModelSnapshots\Models\Relations\MorphSnapshotModels;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
-class TestHasSnapshotRelationsModel extends Model
+class DocumentConsumer extends Model
 {
     use UsesSnapshots;
 
@@ -20,16 +20,16 @@ class TestHasSnapshotRelationsModel extends Model
 
     public function testCreatesSnapshotsModels(): MorphSnapshotModels
     {
-        return $this->morphSnapshotModels(TestCreatesSnapshotsModel::class);
+        return $this->morphSnapshotModels(Document::class);
     }
 
     public function testCreatesSnapshotsModel(): MorphSnapshotModel
     {
-        return $this->morphSnapshotModel(TestCreatesSnapshotsModel::class);
+        return $this->morphSnapshotModel(Document::class);
     }
 
     public function testCreatesSnapshots(): MorphToMany
     {
-        return $this->morphSnapshots(TestCreatesSnapshotsModel::class);
+        return $this->morphSnapshots(Document::class);
     }
 }
