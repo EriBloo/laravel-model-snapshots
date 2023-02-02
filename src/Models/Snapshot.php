@@ -40,12 +40,12 @@ class Snapshot extends Model implements SnapshotInterface
                 return $model;
             },
             set: static function (Model $model): string {
-                $clone = clone $model;
+                $replicate = $model->replicate();
                 if (config('model-snapshots.should_snapshot_hidden')) {
-                    $clone->setHidden([]);
+                    $replicate->setHidden([]);
                 }
 
-                return $clone->toJson();
+                return $replicate->toJson();
             }
         );
     }
