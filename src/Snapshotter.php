@@ -25,7 +25,7 @@ class Snapshotter
         $this->versionist = app(VersionistInterface::class);
         $this->snapshot = app(SnapshotInterface::class);
         $this->snapshot->subject()->associate($this->model);
-        $this->snapshot->setSnapshotModel($this->model);
+        $this->snapshot->setSnapshotValue($this->model);
     }
 
     /**

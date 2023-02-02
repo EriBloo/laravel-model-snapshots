@@ -23,7 +23,7 @@ it('creates snapshot', function () {
     expect($snapshot)
         ->subject_id->toBe($this->model->id)
         ->subject_type->toBe($this->model::class)
-        ->and($snapshot?->getSnapshotModel())
+        ->and($snapshot?->getSnapshotValue())
         ->name->toBe($this->model->name)
         ->content->toBe($this->model->content);
 });
@@ -46,18 +46,16 @@ it('creates proper relations with snapshots', function () {
     snapshot($this->model)->persist();
 
     $snapshot = $this->model->getLatestSnapshot();
-    $test->testCreatesSnapshotsModels()->attach($snapshot?->id);
-    expect($test->testCreatesSnapshotsModels()->first())
-        ->id->toBe($snapshot?->snapshot->id)
-        ->name->toBe($snapshot?->snapshot->name)
-        ->content->toBe($snapshot?->snapshot->content)
-        ->and($test->testCreatesSnapshots()->first())
+    $test->documentSnapshotValues()->attach($snapshot?->id);
+    expect($test->documentSnapshotValues()->first())
+        ->name->toBe($snapshot?->getSnapshotValue()->name)
+        ->content->toBe($snapshot?->getSnapshotValue()->content)
+        ->and($test->documentSnapshots()->first())
         ->toBeInstanceOf(Snapshot::class)
-        ->snapshot_version->toBe('1')
-        ->and($test->testCreatesSnapshotsModel()->first())
-        ->id->toBe($snapshot?->snapshot->id)
-        ->name->toBe($snapshot?->snapshot->name)
-        ->content->toBe($snapshot?->snapshot->content);
+        ->getSnapshotVersion()->toBe('1')
+        ->and($test->documentSnapshotValue()->first())
+        ->name->toBe($snapshot?->getSnapshotValue()->name)
+        ->content->toBe($snapshot?->getSnapshotValue()->content);
 });
 
 it('returns correct snapshots by version and date', function () {
@@ -67,10 +65,10 @@ it('returns correct snapshots by version and date', function () {
     }
 
     expect($this->model->getSnapshotByVersion('7'))
-        ->snapshot_version->toBe('7')
+        ->getSnapshotVersion()->toBe('7')
         ->created_at->toDateTimeString()->toBe(Carbon::make($this->now->addMinutes(10 * 6))?->toDateTimeString())
         ->and($this->model->getSnapshotByDate($this->now->addMinutes(10 * 4 + 5)))
-        ->snapshot_version->toBe('5')
+        ->getSnapshotVersion()->toBe('5')
         ->created_at->toDateTimeString()->toBe(Carbon::make($this->now->addMinutes(10 * 4))?->toDateTimeString());
 });
 
@@ -79,29 +77,29 @@ it('properly versions with versionist set at runtime', function () {
 
     snapshot($this->model)->usingVersionist($versionist)->persist();
     expect($this->model->getLatestSnapshot())
-        ->snapshot_version->toBe('0.1.0');
+        ->getSnapshotVersion()->toBe('0.1.0');
 
     Carbon::setTestNow($this->now->addSeconds(1));
 
     snapshot($this->model)->usingVersionist($versionist)->persist();
     expect($this->model->getLatestSnapshot())
-        ->snapshot_version->toBe('0.2.0');
+        ->getSnapshotVersion()->toBe('0.2.0');
 
     Carbon::setTestNow($this->now->addSeconds(2));
 
     snapshot($this->model)->usingVersionist($versionist->incrementMajor())->persist();
     expect($this->model->getLatestSnapshot())
-        ->snapshot_version->toBe('1.0.0');
+        ->getSnapshotVersion()->toBe('1.0.0');
 
     Carbon::setTestNow($this->now->addSeconds(3));
 
     snapshot($this->model)->usingVersionist($versionist->incrementPatch())->persist();
     expect($this->model->getLatestSnapshot())
-        ->snapshot_version->toBe('1.0.1');
+        ->getSnapshotVersion()->toBe('1.0.1');
 
     Carbon::setTestNow($this->now->addSeconds(4));
 
     snapshot($this->model)->usingVersionist($versionist->incrementMinor())->persist();
     expect($this->model->getLatestSnapshot())
-        ->snapshot_version->toBe('1.1.0');
+        ->getSnapshotVersion()->toBe('1.1.0');
 });

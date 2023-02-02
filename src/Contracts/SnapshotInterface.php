@@ -20,13 +20,13 @@ interface SnapshotInterface
     /**
      * @return Model
      */
-    public function getSnapshotModel(): Model;
+    public function getSnapshotValue(): mixed;
 
     /**
      * @param Model $model
      * @return void
      */
-    public function setSnapshotModel(Model $model): void;
+    public function setSnapshotValue(Model $model): void;
 
     /**
      * @return string

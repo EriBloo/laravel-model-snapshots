@@ -18,17 +18,17 @@ class DocumentConsumer extends Model
         'name',
     ];
 
-    public function testCreatesSnapshotsModels(): MorphSnapshotModels
+    public function documentSnapshotValues(): MorphSnapshotModels
     {
         return $this->morphSnapshotModels(Document::class);
     }
 
-    public function testCreatesSnapshotsModel(): MorphSnapshotModel
+    public function documentSnapshotValue(): MorphSnapshotModel
     {
         return $this->morphSnapshotModel(Document::class);
     }
 
-    public function testCreatesSnapshots(): MorphToMany
+    public function documentSnapshots(): MorphToMany
     {
         return $this->morphSnapshots(Document::class);
     }

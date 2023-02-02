@@ -42,7 +42,7 @@ trait HasSnapshots
     public function getSnapshotByVersion(string $version): SnapshotInterface|null
     {
         /** @var SnapshotInterface|null $snapshot */
-        $snapshot = $this->snapshots()->where('snapshot_version', $version)->first();
+        $snapshot = $this->snapshots()->where('version', $version)->first();
 
         return $snapshot;
     }

@@ -45,7 +45,7 @@ class MorphSnapshotModels extends MorphToMany
      */
     public function get($columns = ['*']): Collection
     {
-        return parent::get(['model_snapshots.subject_type', 'model_snapshots.snapshot'])
-            ->map(fn (SnapshotInterface $snapshot) => $snapshot->getSnapshotModel());
+        return parent::get(['model_snapshots.subject_type', 'model_snapshots.value'])
+            ->map(fn (SnapshotInterface $snapshot) => $snapshot->getSnapshotValue());
     }
 }
