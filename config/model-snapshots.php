@@ -18,9 +18,4 @@ return [
      */
     'versionist_class' => IncrementingVersionist::class,
 
-    /**
-     * Determine if hidden attributes should be stored.
-     */
-    'should_snapshot_hidden' => true,
-
 ];

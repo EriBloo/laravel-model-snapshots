@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use EriBloo\LaravelModelSnapshots\Models\Snapshot;
+use EriBloo\LaravelModelSnapshots\SnapshotOptions;
 use EriBloo\LaravelModelSnapshots\Support\Versionists\SemanticVersionist;
 use EriBloo\LaravelModelSnapshots\Tests\TestSupport\Models\Document;
 use EriBloo\LaravelModelSnapshots\Tests\TestSupport\Models\DocumentConsumer;
@@ -75,31 +76,31 @@ it('returns correct snapshots by version and date', function () {
 it('properly versions with versionist set at runtime', function () {
     $versionist = new SemanticVersionist();
 
-    snapshot($this->model)->usingVersionist($versionist)->persist();
+    snapshot($this->model)->usingOptions(SnapshotOptions::defaults()->withVersionist($versionist))->persist();
     expect($this->model->getLatestSnapshot())
         ->getSnapshotVersion()->toBe('0.1.0');
 
     Carbon::setTestNow($this->now->addSeconds(1));
 
-    snapshot($this->model)->usingVersionist($versionist)->persist();
+    snapshot($this->model)->usingOptions(SnapshotOptions::defaults()->withVersionist($versionist))->persist();
     expect($this->model->getLatestSnapshot())
         ->getSnapshotVersion()->toBe('0.2.0');
 
     Carbon::setTestNow($this->now->addSeconds(2));
 
-    snapshot($this->model)->usingVersionist($versionist->incrementMajor())->persist();
+    snapshot($this->model)->usingOptions(SnapshotOptions::defaults()->withVersionist($versionist->incrementMajor()))->persist();
     expect($this->model->getLatestSnapshot())
         ->getSnapshotVersion()->toBe('1.0.0');
 
     Carbon::setTestNow($this->now->addSeconds(3));
 
-    snapshot($this->model)->usingVersionist($versionist->incrementPatch())->persist();
+    snapshot($this->model)->usingOptions(SnapshotOptions::defaults()->withVersionist($versionist->incrementPatch()))->persist();
     expect($this->model->getLatestSnapshot())
         ->getSnapshotVersion()->toBe('1.0.1');
 
     Carbon::setTestNow($this->now->addSeconds(4));
 
-    snapshot($this->model)->usingVersionist($versionist->incrementMinor())->persist();
+    snapshot($this->model)->usingOptions(SnapshotOptions::defaults()->withVersionist($versionist->incrementMinor()))->persist();
     expect($this->model->getLatestSnapshot())
         ->getSnapshotVersion()->toBe('1.1.0');
 });

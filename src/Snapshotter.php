@@ -6,7 +6,6 @@ namespace EriBloo\LaravelModelSnapshots;
 
 use Closure;
 use EriBloo\LaravelModelSnapshots\Contracts\SnapshotInterface;
-use EriBloo\LaravelModelSnapshots\Contracts\VersionistInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Traits\Conditionable;
 use Spatie\Macroable\Macroable;
@@ -16,42 +15,59 @@ class Snapshotter
     use Conditionable;
     use Macroable;
 
-    protected VersionistInterface $versionist;
+    /**
+     * @var SnapshotOptions
+     */
+    protected SnapshotOptions $options;
 
+    /**
+     * @var SnapshotInterface
+     */
     protected SnapshotInterface $snapshot;
 
+    /**
+     * @param Model $model
+     */
     public function __construct(protected Model $model)
     {
-        $this->versionist = app(VersionistInterface::class);
+        $this->options = method_exists($this->model, 'getSnapshotOptions') ? $this->model->getSnapshotOptions() : SnapshotOptions::defaults();
         $this->snapshot = app(SnapshotInterface::class);
-        $this->snapshot->subject()->associate($this->model);
-        $this->snapshot->setSnapshotValue($this->model);
     }
 
     /**
-     * @param VersionistInterface|Closure $versionist
+     * @param SnapshotOptions|Closure $options
      * @return $this
      */
-    public function usingVersionist(VersionistInterface|Closure $versionist): static
+    public function usingOptions(SnapshotOptions|Closure $options): static
     {
-        $this->versionist = $versionist instanceof Closure ? $versionist($this->versionist) : $versionist;
+        $this->options = $options instanceof Closure ? $options($this->options) : $options;
 
         return $this;
     }
 
+    /**
+     * @return SnapshotInterface
+     */
     public function persist(): SnapshotInterface
     {
+        $this->snapshot->subject()->associate($this->model);
         $this->setSnapshotVersion();
+        $this->setSnapshotValue();
 
         $this->snapshot->save();
 
         return $this->snapshot;
     }
 
+    /**
+     * @return void
+     */
     protected function setSnapshotVersion(): void
     {
         $currentVersion = $this->getLatestVersion();
-        $this->snapshot->setSnapshotVersion($currentVersion ? $this->versionist->getNextVersion($currentVersion) : $this->versionist->getFirstVersion());
+        $versionist = $this->options->versionist;
+
+        $this->snapshot->setSnapshotVersion($currentVersion ? $versionist->getNextVersion($currentVersion) : $versionist->getFirstVersion());
     }
 
     /**
@@ -64,10 +80,31 @@ class Snapshotter
         /** @var SnapshotInterface|null $snapshot */
         $snapshot = $this->snapshot
             ->newQuery()
-            ->whereMorphedTo($this->snapshot->subject(), $this->model::class)
+            ->whereMorphedTo($this->snapshot->subject(), $this->model->getMorphClass())
             ->latest()
             ->first();
 
         return $snapshot?->getSnapshotVersion();
+    }
+
+    /**
+     * @return void
+     */
+    protected function setSnapshotValue(): void
+    {
+        $this->snapshot->setSnapshotValue($this->transformedModel());
+    }
+
+    /**
+     * @return Model
+     */
+    protected function transformedModel(): Model
+    {
+        $replicate = $this->model->replicate($this->options->snapshotExcept);
+        if ($this->options->snapshotHidden) {
+            $replicate->setHidden([]);
+        }
+
+        return $replicate;
     }
 }
