@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use EriBloo\LaravelModelSnapshots\Exceptions\IncompatibleVersionist;
 use EriBloo\LaravelModelSnapshots\Models\Snapshot;
 use EriBloo\LaravelModelSnapshots\SnapshotOptions;
 use EriBloo\LaravelModelSnapshots\Support\Versionists\SemanticVersionist;
@@ -103,4 +104,14 @@ it('properly versions with versionist set at runtime', function () {
     snapshot($this->model)->usingOptions(SnapshotOptions::defaults()->withVersionist($versionist->incrementMinor()))->persist();
     expect($this->model->getLatestSnapshot())
         ->getSnapshotVersion()->toBe('1.1.0');
+});
+
+it('throws when incompatible versionist is used', function () {
+    snapshot($this->model)->persist();
+
+    expect(function () {
+        snapshot($this->model)
+            ->usingOptions(SnapshotOptions::defaults()->withVersionist(new SemanticVersionist()))
+            ->persist();
+    })->toThrow(IncompatibleVersionist::class);
 });

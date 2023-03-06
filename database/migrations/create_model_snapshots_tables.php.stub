@@ -13,6 +13,7 @@ return new class extends Migration
             $table->morphs('subject');
             $table->json('value');
             $table->string('version');
+            $table->json('options');
             $table->timestamps();
         });
 

@@ -72,4 +72,13 @@ class SnapshotOptions
 
         return $this;
     }
+
+    public function __serialize(): array
+    {
+        return [
+            'versionist' => $this->versionist::class,
+            'snapshot_except' => $this->snapshotExcept,
+            'snapshot_hidden' => $this->snapshotExcept
+        ];
+    }
 }

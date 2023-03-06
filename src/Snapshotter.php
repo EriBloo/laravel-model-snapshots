@@ -6,6 +6,7 @@ namespace EriBloo\LaravelModelSnapshots;
 
 use Closure;
 use EriBloo\LaravelModelSnapshots\Contracts\SnapshotInterface;
+use EriBloo\LaravelModelSnapshots\Exceptions\IncompatibleVersionist;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Traits\Conditionable;
 use Spatie\Macroable\Macroable;
@@ -47,12 +48,14 @@ class Snapshotter
 
     /**
      * @return SnapshotInterface
+     * @throws IncompatibleVersionist
      */
     public function persist(): SnapshotInterface
     {
         $this->snapshot->subject()->associate($this->model);
         $this->setSnapshotVersion();
         $this->setSnapshotValue();
+        $this->setSnapshotOptions();
 
         $this->snapshot->save();
 
@@ -61,21 +64,30 @@ class Snapshotter
 
     /**
      * @return void
+     * @throws IncompatibleVersionist
      */
     protected function setSnapshotVersion(): void
     {
-        $currentVersion = $this->getLatestVersion();
+        $latestSnapshot = $this->getLatestSnapshot();
         $versionist = $this->options->versionist;
 
-        $this->snapshot->setSnapshotVersion($currentVersion ? $versionist->getNextVersion($currentVersion) : $versionist->getFirstVersion());
+        if ($latestSnapshot && data_get($latestSnapshot->getSnapshotOptions(), 'versionist') !== $versionist::class) {
+            throw IncompatibleVersionist::make();
+        }
+
+        $latestVersion = $latestSnapshot?->getSnapshotVersion();
+
+        $this->snapshot->setSnapshotVersion(
+            $latestVersion ? $versionist->getNextVersion($latestVersion) : $versionist->getFirstVersion()
+        );
     }
 
     /**
-     * Returns last snapshot version.
+     * Returns last snapshot.
      *
-     * @return string|null
+     * @return SnapshotInterface|null
      */
-    protected function getLatestVersion(): string|null
+    protected function getLatestSnapshot(): SnapshotInterface|null
     {
         /** @var SnapshotInterface|null $snapshot */
         $snapshot = $this->snapshot
@@ -84,7 +96,7 @@ class Snapshotter
             ->latest()
             ->first();
 
-        return $snapshot?->getSnapshotVersion();
+        return $snapshot;
     }
 
     /**
@@ -106,5 +118,13 @@ class Snapshotter
         }
 
         return $replicate;
+    }
+
+    /**
+     * @return void
+     */
+    protected function setSnapshotOptions(): void
+    {
+        $this->snapshot->setSnapshotOptions($this->options);
     }
 }

@@ -6,6 +6,7 @@ namespace EriBloo\LaravelModelSnapshots\Models;
 
 use Carbon\Carbon;
 use EriBloo\LaravelModelSnapshots\Contracts\SnapshotInterface;
+use EriBloo\LaravelModelSnapshots\SnapshotOptions;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
@@ -16,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  * @property string $model_type
  * @property Model $value
  * @property string $version
+ * @property SnapshotOptions|array $options;
  * @property-read Carbon $created_at
  * @property-read Carbon $updated_at
  */
@@ -42,6 +44,23 @@ class Snapshot extends Model implements SnapshotInterface
             set: static function (Model $model): string {
                 return $model->toJson();
             }
+        );
+    }
+
+    /**
+     * @return Attribute
+     */
+    public function options(): Attribute
+    {
+        return Attribute::make(
+            get:static function (string $value): array {
+                return json_decode($value, true, 512, JSON_THROW_ON_ERROR);
+            },
+            set: static fn (SnapshotOptions $options): string => json_encode([
+                'versionist' => $options->versionist::class,
+                'snapshot_except' => $options->snapshotExcept,
+                'snapshot_hidden' => $options->snapshotHidden
+            ], JSON_THROW_ON_ERROR)
         );
     }
 
@@ -77,6 +96,23 @@ class Snapshot extends Model implements SnapshotInterface
     public function setSnapshotVersion(string $version): void
     {
         $this->version = $version;
+    }
+
+    /**
+     * @return array
+     */
+    public function getSnapshotOptions(): array
+    {
+        return $this->options;
+    }
+
+    /**
+     * @param SnapshotOptions $options
+     * @return void
+     */
+    public function setSnapshotOptions(SnapshotOptions $options): void
+    {
+        $this->options = $options;
     }
 
     /**
