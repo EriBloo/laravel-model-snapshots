@@ -8,8 +8,8 @@ use Exception;
 
 class IncompatibleVersionist extends Exception
 {
-    public static function make(): self
+    public static function make(string $previousVersionist, string $currentVersionist): self
     {
-        return new self('Snapshots must use matching versionist.');
+        return new self("Snapshots must use matching versionists. Expected {$previousVersionist}, but received {$currentVersionist}.");
     }
 }

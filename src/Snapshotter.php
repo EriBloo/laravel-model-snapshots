@@ -60,8 +60,11 @@ class Snapshotter
         $latestSnapshot = $this->getLatestSnapshot();
         $versionist = $this->options->versionist;
 
-        if ($latestSnapshot && data_get($latestSnapshot->getSnapshotOptions(), 'versionist') !== $versionist::class) {
-            throw IncompatibleVersionist::make();
+        if ($latestSnapshot && ($previous = data_get($latestSnapshot->getSnapshotOptions(), 'versionist')) !== $versionist::class) {
+            throw IncompatibleVersionist::make(
+                $previous,
+                $versionist::class
+            );
         }
 
         $latestVersion = $latestSnapshot?->getSnapshotVersion();
