@@ -5,7 +5,17 @@
 [![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/eribloo/laravel-model-snapshots/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/eribloo/laravel-model-snapshots/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/eribloo/laravel-model-snapshots.svg?style=flat-square)](https://packagist.org/packages/eribloo/laravel-model-snapshots)
 
-This package allows creating snapshots of models. Snapshots are stored in separate table.
+This package allows creating snapshots of models.
+
+While a typical approach of adding a `version` column is often enough when there is a need of versioning models,
+it may lead to unnecessary cluttering of tables.
+This package tries to mitigate those issues by storing snapshots in separate table.
+
+Package provides simple function for storing model snapshot:
+
+```php
+snapshot(Document::find(1))->persist();
+```
 
 ## Installation
 
@@ -36,23 +46,97 @@ return [
     /**
      * Snapshot class used. Must implement EriBloo\LaravelModelSnapshots\Contracts\SnapshotInterface interface.
      */
-    'snapshot_class' => Snapshot::class,
+    'snapshot_class' => EriBloo\LaravelModelSnapshots\Models\Snapshot::class,
 
     /**
      * Versionist class used. Must implement EriBloo\LaravelModelSnapshots\Contracts\VersionistInterface interface.
      */
-    'versionist_class' => IncrementingVersionist::class,
+    'versionist_class' => EriBloo\LaravelModelSnapshots\Support\Versionists\IncrementingVersionist::class,
 
-    /**
-     * Determine if hidden attributes should be stored.
-     */
-    'should_snapshot_hidden' => true,
 ];
 ```
 
 ## Usage
 
-TBD
+You can create snapshot by using a helper `snapshot()` function:
+
+```php
+snapshot(Document::find(1))->persist();
+```
+
+This will snapshot model using default options defined in `EriBloo\LaravelModelSnapshots\SnapshotOptions` class:
+
+- set version with `versionist` class defined in config
+- snapshot all attributes, excluding primary key and hidden
+
+### Snapshot options
+
+Options can be overridden either by defining a `getSnapshotOptions()` method on model or during snapshot process:
+
+```php
+snapshot(Document::find(1))
+    ->usingOptions(SnapshotOptions::defaults())
+    ->persist();
+```
+
+`usingOptions` method accepts `SnapshotOptions` object or `Closure`.
+If `Closure` is provided it will receive current options as its first argument.
+
+Configurable options include:
+
+```php
+SnapshotOptions::defaults()
+    ->withVersionist(new CustomVersionist()) // accepts VersionistInterface|Closure(VersionistInterface): VersionistInterface
+    ->snapshotExcept(['private_attribute'])
+    ->snapshotHidden(true);
+```
+
+### Versionist
+
+Versionist is a class responsible for determining next snapshot version.
+By default `IncrementingVersionist` is used, which simply increments versions.
+There is also simple `SemanticVersionist` available if you want to keep versions in `x.y.z` format.
+
+Please note that all snapshots of single model must use the same Versionist class. So in situation like this:
+
+```php
+$document = Document::find(1);
+
+snapshot($document)
+    ->usingOptions(SnapshotOptions::defaults()->withVersionist(new IncrementingVersionist()))
+    ->persist();
+
+snapshot($document)
+    ->usingOptions(SnapshotOptions::defaults()->withVersionist(new CustomVersionist()))
+    ->persist();
+```
+
+an `EriBloo\LaravelModelSnapshots\Exceptions\IncompatibleVersionist` exception would be thrown.
+
+> Note on `SemanticVersionist`
+
+since this class can increment 3 version parts, it cannot be simply set up in config or in `getSnapshotOptions()` method
+on model.
+(it would result in one part being incremented each time - minor by default, which defeats its purpose).
+
+If you would like to use this Versionist it should be used with `usingOptions` method, eg:
+
+```php
+// in Document model
+public function getSnapshotOptions(): SnapshotOptions
+{
+    return SnapshotOptions::defaults()->withVersionist(new SemanticVersionist());
+}
+
+// later
+snapshot(Document::find(1))
+    ->usingOptions(
+        fn (SnapshotOptions $options) => $options->withVerionist(
+            fn (SemanticVersionist $versionist) => $versionist->incrementMajor()
+        )
+    )
+    ->persist();
+```
 
 ## Testing
 
