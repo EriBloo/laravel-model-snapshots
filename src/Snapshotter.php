@@ -93,6 +93,7 @@ class Snapshotter
         if ($this->options->snapshotHidden) {
             $replicate->setHidden([]);
         }
+        $replicate->unsetRelations();
 
         return $replicate;
     }
