@@ -16,17 +16,11 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
  */
 trait HasSnapshots
 {
-    /**
-     * @return MorphMany
-     */
     public function snapshots(): MorphMany
     {
         return $this->morphMany(config('model-snapshots.snapshot_class', Snapshot::class), 'subject');
     }
 
-    /**
-     * @return SnapshotInterface|null
-     */
     public function getLatestSnapshot(): SnapshotInterface|null
     {
         /** @var SnapshotInterface|null $snapshot */
@@ -35,10 +29,6 @@ trait HasSnapshots
         return $snapshot;
     }
 
-    /**
-     * @param string $version
-     * @return SnapshotInterface|null
-     */
     public function getSnapshotByVersion(string $version): SnapshotInterface|null
     {
         /** @var SnapshotInterface|null $snapshot */
@@ -49,9 +39,6 @@ trait HasSnapshots
 
     /**
      * Returns snapshot by date.
-     *
-     * @param  DateTimeInterface  $date
-     * @return SnapshotInterface|null
      */
     public function getSnapshotByDate(DateTimeInterface $date): SnapshotInterface|null
     {

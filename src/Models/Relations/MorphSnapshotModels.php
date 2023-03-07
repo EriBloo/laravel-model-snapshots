@@ -12,10 +12,6 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 class MorphSnapshotModels extends MorphToMany
 {
-    /**
-     * @param  string  $snapshotClass
-     * @param  Model  $parent
-     */
     public function __construct(protected string $snapshotClass, Model $parent)
     {
         parent::__construct(
@@ -32,6 +28,7 @@ class MorphSnapshotModels extends MorphToMany
 
     /**
      * {@inheritDoc}
+     *
      *  @return Collection<int,Model>
      */
     public function get($columns = ['*']): Collection

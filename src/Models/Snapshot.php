@@ -23,14 +23,8 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  */
 class Snapshot extends Model implements SnapshotInterface
 {
-    /**
-     * @var string
-     */
     protected $table = 'model_snapshots';
 
-    /**
-     * @return Attribute
-     */
     public function value(): Attribute
     {
         return Attribute::make(
@@ -47,9 +41,6 @@ class Snapshot extends Model implements SnapshotInterface
         );
     }
 
-    /**
-     * @return Attribute
-     */
     public function options(): Attribute
     {
         return Attribute::make(
@@ -59,65 +50,41 @@ class Snapshot extends Model implements SnapshotInterface
             set: static fn (SnapshotOptions $options): string => json_encode([
                 'versionist' => $options->versionist::class,
                 'snapshot_except' => $options->snapshotExcept,
-                'snapshot_hidden' => $options->snapshotHidden
+                'snapshot_hidden' => $options->snapshotHidden,
             ], JSON_THROW_ON_ERROR)
         );
     }
 
-    /**
-     * @return Model
-     */
     public function getSnapshotValue(): Model
     {
         return $this->value;
     }
 
-    /**
-     * @param Model $model
-     * @return void
-     */
     public function setSnapshotValue(Model $model): void
     {
         $this->value = $model;
     }
 
-    /**
-     * @return string
-     */
     public function getSnapshotVersion(): string
     {
         return $this->version;
     }
 
-    /**
-     * @param string $version
-     * @return void
-     */
     public function setSnapshotVersion(string $version): void
     {
         $this->version = $version;
     }
 
-    /**
-     * @return array
-     */
     public function getSnapshotOptions(): array
     {
         return $this->options;
     }
 
-    /**
-     * @param SnapshotOptions $options
-     * @return void
-     */
     public function setSnapshotOptions(SnapshotOptions $options): void
     {
         $this->options = $options;
     }
 
-    /**
-     * @return MorphTo
-     */
     public function subject(): MorphTo
     {
         return $this->morphTo();

@@ -16,7 +16,6 @@ trait UsesSnapshots
 {
     /**
      * @param  class-string  $snapshotClass
-     * @return MorphSnapshotModels
      */
     public function morphSnapshotModels(string $snapshotClass): MorphSnapshotModels
     {
@@ -25,7 +24,6 @@ trait UsesSnapshots
 
     /**
      * @param  class-string  $snapshotClass
-     * @return MorphSnapshotModel
      */
     public function morphSnapshotModel(string $snapshotClass): MorphSnapshotModel
     {
@@ -34,7 +32,6 @@ trait UsesSnapshots
 
     /**
      * @param  class-string  $snapshotClass
-     * @return MorphToMany
      */
     public function morphSnapshots(string $snapshotClass): MorphToMany
     {

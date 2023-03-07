@@ -9,9 +9,6 @@ use EriBloo\LaravelModelSnapshots\Contracts\VersionistInterface;
 
 class SnapshotOptions
 {
-    /**
-     * @var VersionistInterface
-     */
     public VersionistInterface $versionist;
 
     /**
@@ -19,31 +16,18 @@ class SnapshotOptions
      */
     public array $snapshotExcept = [];
 
-    /**
-     * @var bool
-     */
     public bool $snapshotHidden = false;
 
-    /**
-     *
-     */
     protected function __construct()
     {
         $this->versionist = app(VersionistInterface::class);
     }
 
-    /**
-     * @return self
-     */
     public static function defaults(): self
     {
         return new self();
     }
 
-    /**
-     * @param VersionistInterface|Closure $versionist
-     * @return $this
-     */
     public function withVersionist(VersionistInterface|Closure $versionist): static
     {
         $this->versionist = $versionist instanceof Closure ? $versionist($this->versionist) : $versionist;
@@ -52,8 +36,7 @@ class SnapshotOptions
     }
 
     /**
-     * @param array<int, string> $attributes
-     * @return $this
+     * @param  array<int, string>  $attributes
      */
     public function snapshotExcept(array $attributes): static
     {
@@ -62,10 +45,6 @@ class SnapshotOptions
         return $this;
     }
 
-    /**
-     * @param bool $option
-     * @return $this
-     */
     public function snapshotHidden(bool $option = true): static
     {
         $this->snapshotHidden = $option;
@@ -78,7 +57,7 @@ class SnapshotOptions
         return [
             'versionist' => $this->versionist::class,
             'snapshot_except' => $this->snapshotExcept,
-            'snapshot_hidden' => $this->snapshotExcept
+            'snapshot_hidden' => $this->snapshotExcept,
         ];
     }
 }

@@ -1,12 +1,15 @@
 {
-  "preset": "psr12",
-  "rules": {
-    "combine_consecutive_issets": true,
-    "combine_consecutive_unsets": true,
-    "concat_space": true,
-    "declare_parentheses": true,
-    "declare_strict_types": true,
-    "explicit_string_variable": true,
-    "line_ending": true
-  }
+    "preset": "laravel",
+    "rules": {
+        "combine_consecutive_issets": true,
+        "combine_consecutive_unsets": true,
+        "concat_space": {
+            "spacing": "one"
+        },
+        "declare_parentheses": true,
+        "declare_strict_types": true,
+        "explicit_string_variable": true,
+        "line_ending": true,
+        "single_trait_insert_per_statement": true
+    }
 }

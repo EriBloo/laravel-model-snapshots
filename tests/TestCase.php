@@ -16,7 +16,7 @@ class TestCase extends Orchestra
     {
         config()->set('database.default', 'testing');
 
-        $migration = include __DIR__.'/../database/migrations/create_model_snapshots_tables.php.stub';
+        $migration = include __DIR__ . '/../database/migrations/create_model_snapshots_tables.php.stub';
         $migration->up();
 
         Schema::create('documents', static function (Blueprint $table) {
@@ -38,7 +38,7 @@ class TestCase extends Orchestra
         parent::setUp();
 
         Factory::guessFactoryNamesUsing(
-            static fn (string $modelName) => 'EriBloo\\LaravelModelSnapshots\\Tests\\TestSupport\\Database\\Factories\\'.class_basename($modelName).'Factory'
+            static fn (string $modelName) => 'EriBloo\\LaravelModelSnapshots\\Tests\\TestSupport\\Database\\Factories\\' . class_basename($modelName) . 'Factory'
         );
     }
 

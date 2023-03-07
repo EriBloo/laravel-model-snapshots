@@ -13,10 +13,6 @@ use Spatie\LaravelPackageTools\PackageServiceProvider;
 
 class LaravelModelSnapshotsServiceProvider extends PackageServiceProvider
 {
-    /**
-     * @param Package $package
-     * @return void
-     */
     public function configurePackage(Package $package): void
     {
         /*
@@ -30,9 +26,6 @@ class LaravelModelSnapshotsServiceProvider extends PackageServiceProvider
             ->hasMigration('create_model_snapshots_tables');
     }
 
-    /**
-     * @return void
-     */
     public function packageBooted(): void
     {
         $this->app->bind(

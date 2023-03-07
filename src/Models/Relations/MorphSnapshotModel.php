@@ -16,10 +16,6 @@ class MorphSnapshotModel extends MorphToMany
 {
     use SupportsDefaultModels;
 
-    /**
-     * @param  string  $snapshotClass
-     * @param  Model  $parent
-     */
     public function __construct(protected string $snapshotClass, Model $parent)
     {
         parent::__construct(
@@ -48,6 +44,7 @@ class MorphSnapshotModel extends MorphToMany
 
     /**
      * {@inheritDoc}
+     *
      *  @return Collection<int,Model>
      */
     public function get($columns = ['*']): Collection

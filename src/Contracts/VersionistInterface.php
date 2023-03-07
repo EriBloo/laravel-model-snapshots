@@ -8,16 +8,11 @@ interface VersionistInterface
 {
     /**
      * Get first version id.
-     *
-     * @return string
      */
     public function getFirstVersion(): string;
 
     /**
      * Get next version id.
-     *
-     * @param  string  $version current version id
-     * @return string
      */
     public function getNextVersion(string $version): string;
 }

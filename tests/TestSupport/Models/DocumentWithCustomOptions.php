@@ -29,7 +29,7 @@ class DocumentWithCustomOptions extends Model
     ];
 
     protected $hidden = [
-        'content'
+        'content',
     ];
 
     public function getSnapshotOptions(): SnapshotOptions

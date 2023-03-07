@@ -16,29 +16,16 @@ class Snapshotter
     use Conditionable;
     use Macroable;
 
-    /**
-     * @var SnapshotOptions
-     */
     protected SnapshotOptions $options;
 
-    /**
-     * @var SnapshotInterface
-     */
     protected SnapshotInterface $snapshot;
 
-    /**
-     * @param Model $model
-     */
     public function __construct(protected Model $model)
     {
         $this->options = method_exists($this->model, 'getSnapshotOptions') ? $this->model->getSnapshotOptions() : SnapshotOptions::defaults();
         $this->snapshot = app(SnapshotInterface::class);
     }
 
-    /**
-     * @param SnapshotOptions|Closure $options
-     * @return $this
-     */
     public function usingOptions(SnapshotOptions|Closure $options): static
     {
         $this->options = $options instanceof Closure ? $options($this->options) : $options;
@@ -47,7 +34,6 @@ class Snapshotter
     }
 
     /**
-     * @return SnapshotInterface
      * @throws IncompatibleVersionist
      */
     public function persist(): SnapshotInterface
@@ -63,7 +49,6 @@ class Snapshotter
     }
 
     /**
-     * @return void
      * @throws IncompatibleVersionist
      */
     protected function setSnapshotVersion(): void
@@ -84,8 +69,6 @@ class Snapshotter
 
     /**
      * Returns last snapshot.
-     *
-     * @return SnapshotInterface|null
      */
     protected function getLatestSnapshot(): SnapshotInterface|null
     {
@@ -99,17 +82,11 @@ class Snapshotter
         return $snapshot;
     }
 
-    /**
-     * @return void
-     */
     protected function setSnapshotValue(): void
     {
         $this->snapshot->setSnapshotValue($this->transformedModel());
     }
 
-    /**
-     * @return Model
-     */
     protected function transformedModel(): Model
     {
         $replicate = $this->model->replicate($this->options->snapshotExcept);
@@ -120,9 +97,6 @@ class Snapshotter
         return $replicate;
     }
 
-    /**
-     * @return void
-     */
     protected function setSnapshotOptions(): void
     {
         $this->snapshot->setSnapshotOptions($this->options);
