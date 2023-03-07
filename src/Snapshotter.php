@@ -26,6 +26,10 @@ class Snapshotter
         $this->snapshot = app(SnapshotInterface::class);
     }
 
+    /**
+     * @param  SnapshotOptions|Closure(SnapshotOptions): SnapshotOptions  $options
+     * @return $this
+     */
     public function usingOptions(SnapshotOptions|Closure $options): static
     {
         $this->options = $options instanceof Closure ? $options($this->options) : $options;

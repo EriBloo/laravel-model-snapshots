@@ -28,6 +28,10 @@ class SnapshotOptions
         return new self();
     }
 
+    /**
+     * @param  VersionistInterface|Closure(VersionistInterface): VersionistInterface  $versionist
+     * @return $this
+     */
     public function withVersionist(VersionistInterface|Closure $versionist): static
     {
         $this->versionist = $versionist instanceof Closure ? $versionist($this->versionist) : $versionist;
