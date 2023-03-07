@@ -3,19 +3,17 @@
 declare(strict_types=1);
 
 // config for EriBloo/LaravelModelSnapshots
-use EriBloo\LaravelModelSnapshots\Models\Snapshot;
-use EriBloo\LaravelModelSnapshots\Support\Versionists\IncrementingVersionist;
 
 return [
 
     /**
      * Snapshot class used. Must implement EriBloo\LaravelModelSnapshots\Contracts\SnapshotInterface interface.
      */
-    'snapshot_class' => Snapshot::class,
+    'snapshot_class' => EriBloo\LaravelModelSnapshots\Models\Snapshot::class,
 
     /**
      * Versionist class used. Must implement EriBloo\LaravelModelSnapshots\Contracts\VersionistInterface interface.
      */
-    'versionist_class' => IncrementingVersionist::class,
+    'versionist_class' => EriBloo\LaravelModelSnapshots\Support\Versionists\IncrementingVersionist::class,
 
 ];
