@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace EriBloo\LaravelModelSnapshots\Concerns;
 
-use EriBloo\LaravelModelSnapshots\Models\Relations\MorphSnapshotModel;
-use EriBloo\LaravelModelSnapshots\Models\Relations\MorphSnapshotModels;
+use EriBloo\LaravelModelSnapshots\Relations\MorphSnapshotModel;
+use EriBloo\LaravelModelSnapshots\Relations\MorphSnapshotModels;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
@@ -19,7 +19,7 @@ trait UsesSnapshots
      */
     public function morphSnapshotModels(string $snapshotClass): MorphSnapshotModels
     {
-        return (new MorphSnapshotModels($snapshotClass, $this))->where('model_snapshots.subject_type', $snapshotClass);
+        return (new MorphSnapshotModels($this))->where('model_snapshots.subject_type', $snapshotClass);
     }
 
     /**
@@ -27,7 +27,7 @@ trait UsesSnapshots
      */
     public function morphSnapshotModel(string $snapshotClass): MorphSnapshotModel
     {
-        return (new MorphSnapshotModel($snapshotClass, $this))->where('model_snapshots.subject_type', $snapshotClass);
+        return (new MorphSnapshotModel($this))->where('model_snapshots.subject_type', $snapshotClass);
     }
 
     /**
