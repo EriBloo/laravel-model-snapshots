@@ -57,7 +57,10 @@ it('creates proper relations with snapshots', function () {
         ->getSnapshotVersion()->toBe('1')
         ->and($test->documentSnapshotValue()->first())
         ->name->toBe($snapshot?->getSnapshotValue()->name)
-        ->content->toBe($snapshot?->getSnapshotValue()->content);
+        ->content->toBe($snapshot?->getSnapshotValue()->content)
+        ->and($test->documentSnapshot()->first())
+        ->toBeInstanceOf(Snapshot::class)
+        ->getSnapshotVersion()->toBe('1');
 });
 
 it('returns correct snapshots by version and date', function () {

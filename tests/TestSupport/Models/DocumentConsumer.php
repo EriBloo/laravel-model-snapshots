@@ -32,4 +32,9 @@ class DocumentConsumer extends Model
     {
         return $this->morphSnapshots(Document::class);
     }
+
+    public function documentSnapshot(): MorphToMany
+    {
+        return $this->morphSnapshot(Document::class);
+    }
 }
