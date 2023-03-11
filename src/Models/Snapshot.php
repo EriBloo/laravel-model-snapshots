@@ -44,7 +44,7 @@ class Snapshot extends Model implements SnapshotInterface
     public function options(): Attribute
     {
         return Attribute::make(
-            get:static function (string $value): array {
+            get: static function (string $value): array {
                 return json_decode($value, true, 512, JSON_THROW_ON_ERROR);
             },
             set: static fn (SnapshotOptions $options): string => json_encode([

@@ -29,7 +29,7 @@ class MorphSnapshotModels extends MorphToMany
     /**
      * {@inheritDoc}
      *
-     *  @return Collection<int,Model>
+     * @return Collection<int,Model>
      */
     public function get($columns = ['*']): Collection
     {

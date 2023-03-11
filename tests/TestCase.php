@@ -12,6 +12,15 @@ use Orchestra\Testbench\TestCase as Orchestra;
 
 class TestCase extends Orchestra
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        Factory::guessFactoryNamesUsing(
+            static fn (string $modelName) => 'EriBloo\\LaravelModelSnapshots\\Tests\\TestSupport\\Database\\Factories\\' . class_basename($modelName) . 'Factory'
+        );
+    }
+
     public function getEnvironmentSetUp($app): void
     {
         config()->set('database.default', 'testing');
@@ -31,15 +40,6 @@ class TestCase extends Orchestra
             $table->string('name');
             $table->timestamps();
         });
-    }
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        Factory::guessFactoryNamesUsing(
-            static fn (string $modelName) => 'EriBloo\\LaravelModelSnapshots\\Tests\\TestSupport\\Database\\Factories\\' . class_basename($modelName) . 'Factory'
-        );
     }
 
     protected function getPackageProviders($app): array
