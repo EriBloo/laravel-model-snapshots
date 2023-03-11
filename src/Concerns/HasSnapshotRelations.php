@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
 /**
  * @mixin Model
  */
-trait UsesSnapshots
+trait HasSnapshotRelations
 {
     use HasMorphToOne;
 
