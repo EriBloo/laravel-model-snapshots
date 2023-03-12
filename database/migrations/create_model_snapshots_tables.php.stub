@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('model_snapshots', function (Blueprint $table) {
             $table->id();
             $table->morphs('subject');
-            $table->mediumText('value');
+            $table->json('value');
             $table->string('version');
             $table->json('options');
             $table->timestamps();
