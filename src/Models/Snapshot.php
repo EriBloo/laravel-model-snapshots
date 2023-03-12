@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  * @property-read int $id
  * @property int $subject_id
  * @property string $subject_type
- * @property Model $value
+ * @property Model $stored_attributes
  * @property string $version
  * @property SnapshotOptions|array $options;
  * @property-read Carbon $created_at
@@ -25,7 +25,7 @@ class Snapshot extends Model implements SnapshotInterface
 {
     protected $table = 'model_snapshots';
 
-    public function value(): Attribute
+    public function storedAttributes(): Attribute
     {
         return Attribute::make(
             get: static function (string $value, $attributes): Model {
@@ -47,7 +47,7 @@ class Snapshot extends Model implements SnapshotInterface
             get: static function (string $value): array {
                 return json_decode($value, true, 512, JSON_THROW_ON_ERROR);
             },
-            set: static fn (SnapshotOptions $options): string => json_encode([
+            set: static fn(SnapshotOptions $options): string => json_encode([
                 'versionist' => $options->versionist::class,
                 'snapshot_except' => $options->snapshotExcept,
                 'snapshot_hidden' => $options->snapshotHidden,
@@ -55,32 +55,32 @@ class Snapshot extends Model implements SnapshotInterface
         );
     }
 
-    public function getSnapshotValue(): Model
+    public function getSnapshot(): Model
     {
-        return $this->value;
+        return $this->stored_attributes;
     }
 
-    public function setSnapshotValue(Model $model): void
+    public function setSnapshot(Model $model): void
     {
-        $this->value = $model;
+        $this->stored_attributes = $model;
     }
 
-    public function getSnapshotVersion(): string
+    public function getVersion(): string
     {
         return $this->version;
     }
 
-    public function setSnapshotVersion(string $version): void
+    public function setVersion(string $version): void
     {
         $this->version = $version;
     }
 
-    public function getSnapshotOptions(): array
+    public function getOptions(): array
     {
         return $this->options;
     }
 
-    public function setSnapshotOptions(SnapshotOptions $options): void
+    public function setOptions(SnapshotOptions $options): void
     {
         $this->options = $options;
     }

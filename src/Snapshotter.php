@@ -27,7 +27,7 @@ class Snapshotter
     }
 
     /**
-     * @param  SnapshotOptions|Closure(SnapshotOptions): SnapshotOptions  $options
+     * @param SnapshotOptions|Closure(SnapshotOptions): SnapshotOptions $options
      * @return $this
      */
     public function usingOptions(SnapshotOptions|Closure $options): static
@@ -60,16 +60,16 @@ class Snapshotter
         $latestSnapshot = $this->getLatestSnapshot();
         $versionist = $this->options->versionist;
 
-        if ($latestSnapshot && ($previous = data_get($latestSnapshot->getSnapshotOptions(), 'versionist')) !== $versionist::class) {
+        if ($latestSnapshot && ($previous = data_get($latestSnapshot->getOptions(), 'versionist')) !== $versionist::class) {
             throw IncompatibleVersionist::make(
                 $previous,
                 $versionist::class
             );
         }
 
-        $latestVersion = $latestSnapshot?->getSnapshotVersion();
+        $latestVersion = $latestSnapshot?->getVersion();
 
-        $this->snapshot->setSnapshotVersion(
+        $this->snapshot->setVersion(
             $latestVersion ? $versionist->getNextVersion($latestVersion) : $versionist->getFirstVersion()
         );
     }
@@ -91,7 +91,7 @@ class Snapshotter
 
     protected function setSnapshotValue(): void
     {
-        $this->snapshot->setSnapshotValue($this->transformedModel());
+        $this->snapshot->setSnapshot($this->transformedModel());
     }
 
     protected function transformedModel(): Model
@@ -107,6 +107,6 @@ class Snapshotter
 
     protected function setSnapshotOptions(): void
     {
-        $this->snapshot->setSnapshotOptions($this->options);
+        $this->snapshot->setOptions($this->options);
     }
 }

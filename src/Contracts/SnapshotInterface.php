@@ -15,15 +15,15 @@ interface SnapshotInterface
 {
     public function subject(): MorphTo;
 
-    public function getSnapshotValue(): mixed;
+    public function getSnapshot(): mixed;
 
-    public function setSnapshotValue(Model $model): void;
+    public function setSnapshot(Model $model): void;
 
-    public function getSnapshotVersion(): string;
+    public function getVersion(): string;
 
-    public function setSnapshotVersion(string $version): void;
+    public function setVersion(string $version): void;
 
-    public function getSnapshotOptions(): array;
+    public function getOptions(): array;
 
-    public function setSnapshotOptions(SnapshotOptions $options): void;
+    public function setOptions(SnapshotOptions $options): void;
 }
