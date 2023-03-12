@@ -2,12 +2,14 @@
 
 declare(strict_types=1);
 
+use EriBloo\LaravelModelSnapshots\Contracts\SnapshotInterface;
 use EriBloo\LaravelModelSnapshots\Exceptions\IncompatibleVersionist;
 use EriBloo\LaravelModelSnapshots\Models\Snapshot;
 use EriBloo\LaravelModelSnapshots\SnapshotOptions;
 use EriBloo\LaravelModelSnapshots\Support\Versionists\SemanticVersionist;
 use EriBloo\LaravelModelSnapshots\Tests\TestSupport\Models\Document;
 use EriBloo\LaravelModelSnapshots\Tests\TestSupport\Models\DocumentConsumer;
+use EriBloo\LaravelModelSnapshots\Tests\TestSupport\Models\DocumentWithCasts;
 use Illuminate\Support\Carbon;
 
 beforeEach(function () {
@@ -28,6 +30,29 @@ it('creates snapshot', function () {
         ->and($snapshot?->getSnapshotValue())
         ->name->toBe($this->model->name)
         ->content->toBe($this->model->content);
+});
+
+it('stores proper raw values', function () {
+    $model = DocumentWithCasts::query()->create([
+        'date_attr' => Carbon::now(),
+        'array_attr' => ['test' => 'test', 'test'],
+        'int_enum_attr' => \EriBloo\LaravelModelSnapshots\Tests\TestSupport\Enums\IntBackedEnum::one,
+        'string_enum_attr' => \EriBloo\LaravelModelSnapshots\Tests\TestSupport\Enums\StringBackedEnum::two,
+        'accessor_attr' => 'test',
+        'mutator_attr' => 'test',
+        'both_attr' => 'test',
+    ]);
+
+    snapshot($model)->persist();
+    /** @var SnapshotInterface $snapshot */
+    $snapshot = $model->getLatestSnapshot();
+
+    foreach ($model->getAttributes() as $property => $value) {
+        if ($property === $model->getKeyName()) {
+            continue;
+        }
+        expect($value)->toEqual($snapshot->getSnapshotValue()->getAttributes()[$property]);
+    }
 });
 
 it('versions properly', function () {

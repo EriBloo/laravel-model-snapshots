@@ -31,12 +31,12 @@ class Snapshot extends Model implements SnapshotInterface
             get: static function (string $value, $attributes): Model {
                 /** @var Model $model */
                 $model = new $attributes['subject_type']();
-                $model->forceFill(json_decode($value, true, 512, JSON_THROW_ON_ERROR));
+                $model->setRawAttributes(json_decode($value, true, 512, JSON_THROW_ON_ERROR));
 
                 return $model;
             },
             set: static function (Model $model): string {
-                return $model->toJson();
+                return json_encode($model->getAttributes(), JSON_THROW_ON_ERROR);
             }
         );
     }
