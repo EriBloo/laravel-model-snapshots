@@ -26,4 +26,6 @@ interface SnapshotInterface
     public function getOptions(): array;
 
     public function setOptions(SnapshotOptions $options): void;
+
+    public function restore(): Model;
 }

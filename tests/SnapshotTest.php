@@ -143,3 +143,19 @@ it('throws when incompatible versionist is used', function () {
             ->persist();
     })->toThrow(IncompatibleVersionist::class);
 });
+
+it('properly restores model', function () {
+    snapshot($this->model)->persist();
+
+    $this->model->update(Document::factory()->raw());
+
+    expect($this->model->toArray())->not()->toMatchArray($this->attributes);
+
+    /** @var SnapshotInterface $snapshot */
+    $snapshot = $this->model->getLatestSnapshot();
+    $snapshot->restore();
+    $this->model->refresh();
+
+    expect($this->model->toArray())->toMatchArray($this->attributes);
+});
+

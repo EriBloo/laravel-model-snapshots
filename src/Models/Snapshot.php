@@ -85,6 +85,16 @@ class Snapshot extends Model implements SnapshotInterface
         $this->options = $options;
     }
 
+    public function restore(): Model
+    {
+        $model = $this->subject()->firstOrFail();
+
+        $model->setRawAttributes($this->getSnapshot()->getAttributes());
+        $model->save();
+
+        return $model;
+    }
+
     public function subject(): MorphTo
     {
         return $this->morphTo();
