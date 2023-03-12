@@ -13,8 +13,8 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 /**
  * @property-read int $id
- * @property int $model_id
- * @property string $model_type
+ * @property int $subject_id
+ * @property string $subject_type
  * @property Model $value
  * @property string $version
  * @property SnapshotOptions|array $options;
