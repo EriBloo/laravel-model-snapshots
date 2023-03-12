@@ -23,6 +23,8 @@ class DocumentWithCustomOptions extends Model
 
     protected $table = 'documents';
 
+    public $timestamps = false;
+
     protected $fillable = [
         'name',
         'content',

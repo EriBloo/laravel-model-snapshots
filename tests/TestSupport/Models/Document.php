@@ -21,6 +21,8 @@ class Document extends Model
     use HasFactory;
     use HasSnapshots;
 
+    public $timestamps = false;
+
     protected $fillable = [
         'name',
         'content',

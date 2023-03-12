@@ -25,7 +25,7 @@ class TestCase extends Orchestra
         parent::setUp();
 
         Factory::guessFactoryNamesUsing(
-            static fn (string $modelName) => 'EriBloo\\LaravelModelSnapshots\\Tests\\TestSupport\\Database\\Factories\\' . class_basename($modelName) . 'Factory'
+            static fn(string $modelName) => 'EriBloo\\LaravelModelSnapshots\\Tests\\TestSupport\\Database\\Factories\\' . class_basename($modelName) . 'Factory'
         );
     }
 
@@ -40,13 +40,11 @@ class TestCase extends Orchestra
             $table->id();
             $table->string('name');
             $table->text('content');
-            $table->timestamps();
         });
 
         Schema::create('document_consumers', static function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->timestamps();
         });
 
         Schema::create('cast_documents', static function (Blueprint $table) {
