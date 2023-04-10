@@ -27,7 +27,7 @@ class Snapshotter
     }
 
     /**
-     * @param SnapshotOptions|Closure(SnapshotOptions): SnapshotOptions $options
+     * @param  SnapshotOptions|Closure(SnapshotOptions): SnapshotOptions  $options
      * @return $this
      */
     public function usingOptions(SnapshotOptions|Closure $options): static

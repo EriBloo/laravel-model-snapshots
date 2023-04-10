@@ -158,4 +158,3 @@ it('properly restores model', function () {
 
     expect($this->model->toArray())->toMatchArray($this->attributes);
 });
-

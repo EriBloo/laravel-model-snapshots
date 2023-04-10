@@ -47,7 +47,7 @@ class Snapshot extends Model implements SnapshotInterface
             get: static function (string $value): array {
                 return json_decode($value, true, 512, JSON_THROW_ON_ERROR);
             },
-            set: static fn(SnapshotOptions $options): string => json_encode([
+            set: static fn (SnapshotOptions $options): string => json_encode([
                 'versionist' => $options->versionist::class,
                 'snapshot_except' => $options->snapshotExcept,
                 'snapshot_hidden' => $options->snapshotHidden,

@@ -25,7 +25,7 @@ class TestCase extends Orchestra
         parent::setUp();
 
         Factory::guessFactoryNamesUsing(
-            static fn(string $modelName) => 'EriBloo\\LaravelModelSnapshots\\Tests\\TestSupport\\Database\\Factories\\' . class_basename($modelName) . 'Factory'
+            static fn (string $modelName) => 'EriBloo\\LaravelModelSnapshots\\Tests\\TestSupport\\Database\\Factories\\' . class_basename($modelName) . 'Factory'
         );
     }
 
