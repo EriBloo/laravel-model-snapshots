@@ -71,7 +71,16 @@ This will snapshot model using default options defined in `EriBloo\LaravelModelS
 
 ### Snapshot options
 
-Options can be overridden either by defining a `getSnapshotOptions()` method on model or during snapshot process:
+Options can be overridden either by defining a `getSnapshotOptions()` method on model:
+
+```php
+public function getSnapshotOptions(): SnapshotOptions
+{
+    return SnapshotOptions::defaults();
+}
+```
+
+or during snapshot process:
 
 ```php
 snapshot(Document::find(1))
@@ -85,7 +94,7 @@ If `Closure` is provided it will receive current options as its first argument.
 Configurable options include:
 
 ```php
-SnapshotOptions::defaults()
+SnapshotOptions::defaults() // first initialize options with default values
     ->withVersionist(new CustomVersionist()) // accepts VersionistInterface|Closure(VersionistInterface): VersionistInterface
     ->snapshotExcept(['private_attribute'])
     ->snapshotHidden(true);
@@ -96,6 +105,15 @@ SnapshotOptions::defaults()
 Versionist is a class responsible for determining next snapshot version.
 By default `IncrementingVersionist` is used, which simply increments versions.
 There is also simple `SemanticVersionist` available if you want to keep versions in `x.y.z` format.
+
+If you would like to create your own versionist class it must implement
+`EriBloo\LaravelModelSnapshots\Contracts\VersionistInterface`. There are two methods you must create:
+
+```php
+public function getFirstVersion(): string;
+
+public function getNextVersion(string $version): string;
+```
 
 Please note that all snapshots of single model must use the same Versionist class. So in situation like this:
 
@@ -137,6 +155,24 @@ snapshot(Document::find(1))
     )
     ->persist();
 ```
+
+### Restoring
+
+Snapshots provide `restore()` method that reverts original model to its snapshotted version.
+
+### Traits
+
+While no trait is needed to make a snapshot, package provides 2 helper traits:
+
+- `HasSnapshots` - provides `snapshots()` relationship for retrieving stored snapshots as well as few getters:
+    - `getLatestSnapshot()`
+    - `getSnapshotByVersion(string $version)` - returns snapshot by specific version
+    - `getSnapshotByDate(DateTimeImmutable $date)` - returns last snapshot created before date
+- `HasSnapshotRelations` - provides relationship methods for creating connections with snapshots:
+    - `morphSnapshots(string $snapshotClass)` - helper `morphToMany`
+    - `morphSnapshot(string $snapshotClass)` - helper `morphToOne`
+    - `morphSnapshotModels(string $snapshotClass)` - `morphToMany` relation that directly returns snapshotted model
+    - `morphSnapshotModel(string $snapshotClass)` - `morphToOne` version of above
 
 ## Testing
 
