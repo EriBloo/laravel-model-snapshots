@@ -192,6 +192,14 @@ While no trait is needed to make a snapshot, package provides 2 helper traits fo
     - `morphSnapshotModels(string $snapshotClass)` - `morphToMany` relation that directly returns snapshotted model
     - `morphSnapshotModel(string $snapshotClass)` - `morphToOne` version of above
 
+### Events
+
+There are 2 events that get dispatched:
+
+- `EriBloo\LaravelModelSnapshots\Events\SnapshotPersisted` - dispatched when new snapshot is persisted, but not when
+  duplicate is found
+- `EriBloo\LaravelModelSnapshots\Events\SnapshotRestored` - dispatched when snapshot is restored
+
 ## Testing
 
 ```bash
