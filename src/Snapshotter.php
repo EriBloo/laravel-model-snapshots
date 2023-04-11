@@ -6,6 +6,7 @@ namespace EriBloo\LaravelModelSnapshots;
 
 use Closure;
 use EriBloo\LaravelModelSnapshots\Contracts\SnapshotInterface;
+use EriBloo\LaravelModelSnapshots\Events\SnapshotPersisted;
 use EriBloo\LaravelModelSnapshots\Exceptions\IncompatibleVersionist;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Traits\Conditionable;
@@ -51,6 +52,8 @@ class Snapshotter
             $this->snapshot = $matchingSnapshot;
         } else {
             $this->snapshot->save();
+
+            event(new SnapshotPersisted($this->snapshot, $this->model));
         }
 
         return $this->snapshot;

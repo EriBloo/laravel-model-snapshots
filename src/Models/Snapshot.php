@@ -6,6 +6,7 @@ namespace EriBloo\LaravelModelSnapshots\Models;
 
 use Carbon\Carbon;
 use EriBloo\LaravelModelSnapshots\Contracts\SnapshotInterface;
+use EriBloo\LaravelModelSnapshots\Events\SnapshotRestored;
 use EriBloo\LaravelModelSnapshots\SnapshotOptions;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
@@ -92,6 +93,8 @@ class Snapshot extends Model implements SnapshotInterface
 
         $model->setRawAttributes($this->getSnapshot()->getAttributes());
         $model->save();
+
+        event(new SnapshotRestored($this, $model));
 
         return $model;
     }
