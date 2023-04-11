@@ -47,7 +47,11 @@ class Snapshotter
         $this->setSnapshotValue();
         $this->setSnapshotOptions();
 
-        $this->snapshot->save();
+        if (! $this->options->snapshotDuplicate && $matchingSnapshot = $this->findMatchingSnapshot()) {
+            $this->snapshot = $matchingSnapshot;
+        } else {
+            $this->snapshot->save();
+        }
 
         return $this->snapshot;
     }
@@ -84,6 +88,18 @@ class Snapshotter
             ->newQuery()
             ->whereMorphedTo($this->snapshot->subject(), $this->model->getMorphClass())
             ->latest()
+            ->first();
+
+        return $snapshot;
+    }
+
+    protected function findMatchingSnapshot(): SnapshotInterface|null
+    {
+        /** @var SnapshotInterface|null $snapshot */
+        $snapshot = $this->snapshot
+            ->newQuery()
+            ->whereMorphedTo($this->snapshot->subject(), $this->model->getMorphClass())
+            ->where('stored_attributes', $this->snapshot->getSnapshot())
             ->first();
 
         return $snapshot;

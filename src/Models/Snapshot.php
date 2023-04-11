@@ -51,6 +51,7 @@ class Snapshot extends Model implements SnapshotInterface
                 'versionist' => $options->versionist::class,
                 'snapshot_except' => $options->snapshotExcept,
                 'snapshot_hidden' => $options->snapshotHidden,
+                'snapshot_duplicate' => $options->snapshotDuplicate,
             ], JSON_THROW_ON_ERROR)
         );
     }

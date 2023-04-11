@@ -39,6 +39,7 @@ class DocumentWithCustomOptions extends Model
         return SnapshotOptions::defaults()
             ->withVersionist(new SemanticVersionist())
             ->snapshotExcept(['name'])
-            ->snapshotHidden();
+            ->snapshotHidden()
+            ->snapshotDuplicate();
     }
 }

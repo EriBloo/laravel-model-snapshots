@@ -18,6 +18,8 @@ class SnapshotOptions
 
     public bool $snapshotHidden = false;
 
+    public bool $snapshotDuplicate = false;
+
     protected function __construct()
     {
         $this->versionist = app(VersionistInterface::class);
@@ -52,6 +54,13 @@ class SnapshotOptions
     public function snapshotHidden(bool $option = true): static
     {
         $this->snapshotHidden = $option;
+
+        return $this;
+    }
+
+    public function snapshotDuplicate(bool $option = true): static
+    {
+        $this->snapshotDuplicate = $option;
 
         return $this;
     }

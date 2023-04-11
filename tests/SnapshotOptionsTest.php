@@ -31,3 +31,11 @@ it('can snapshot hidden', function () {
 
     expect($this->model->getLatestSnapshot()->getSnapshot()->content)->not()->toBeNull();
 });
+
+it('can force snapshotting duplicates', function () {
+    snapshot($this->model)->persist();
+    Carbon::setTestNow($this->now->addSecond());
+    snapshot($this->model)->persist();
+
+    expect($this->model->getLatestSnapshot()->getKey())->toBe(2);
+});

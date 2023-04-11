@@ -11,6 +11,7 @@ use EriBloo\LaravelModelSnapshots\Tests\TestSupport\Models\Document;
 use EriBloo\LaravelModelSnapshots\Tests\TestSupport\Models\DocumentConsumer;
 use EriBloo\LaravelModelSnapshots\Tests\TestSupport\Models\DocumentWithCasts;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 
 beforeEach(function () {
     $this->now = Carbon::now()->toImmutable();
@@ -30,6 +31,15 @@ it('creates snapshot', function () {
         ->and($snapshot?->getSnapshot())
         ->name->toBe($this->model->name)
         ->content->toBe($this->model->content);
+});
+
+it('does not create duplicate snapshots when no changes were made', function () {
+    snapshot($this->model)->persist();
+    $first = $this->model->getLatestSnapshot();
+    snapshot($this->model)->persist();
+    $second = $this->model->getLatestSnapshot();
+
+    expect($first)->getKey()->toBe($second->getKey());
 });
 
 it('stores proper raw values', function () {
@@ -61,6 +71,7 @@ it('versions properly', function () {
         ->toBe('1');
 
     Carbon::setTestNow($this->now->addSecond());
+    $this->model->update(['name' => Str::random()]);
 
     snapshot($this->model)->persist();
     expect($this->model->getLatestSnapshot()?->getVersion())
@@ -92,6 +103,7 @@ it('returns correct snapshots by version and date', function () {
     for ($i = 1; $i <= 10; $i++) {
         snapshot($this->model)->persist();
         Carbon::setTestNow($this->now->addMinutes(10 * $i));
+        $this->model->update(['name' => Str::random()]);
     }
 
     expect($this->model->getSnapshotByVersion('7'))
@@ -110,24 +122,29 @@ it('properly versions with versionist set at runtime', function () {
         ->getVersion()->toBe('0.1.0');
 
     Carbon::setTestNow($this->now->addSeconds(1));
+    $this->model->update(['name' => Str::random()]);
 
     snapshot($this->model)->usingOptions(SnapshotOptions::defaults()->withVersionist($versionist))->persist();
     expect($this->model->getLatestSnapshot())
         ->getVersion()->toBe('0.2.0');
+    $this->model->update(['name' => Str::random()]);
 
     Carbon::setTestNow($this->now->addSeconds(2));
+    $this->model->update(['name' => Str::random()]);
 
     snapshot($this->model)->usingOptions(SnapshotOptions::defaults()->withVersionist($versionist->incrementMajor()))->persist();
     expect($this->model->getLatestSnapshot())
         ->getVersion()->toBe('1.0.0');
 
     Carbon::setTestNow($this->now->addSeconds(3));
+    $this->model->update(['name' => Str::random()]);
 
     snapshot($this->model)->usingOptions(SnapshotOptions::defaults()->withVersionist($versionist->incrementPatch()))->persist();
     expect($this->model->getLatestSnapshot())
         ->getVersion()->toBe('1.0.1');
 
     Carbon::setTestNow($this->now->addSeconds(4));
+    $this->model->update(['name' => Str::random()]);
 
     snapshot($this->model)->usingOptions(SnapshotOptions::defaults()->withVersionist($versionist->incrementMinor()))->persist();
     expect($this->model->getLatestSnapshot())
