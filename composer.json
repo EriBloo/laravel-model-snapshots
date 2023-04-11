@@ -1,7 +1,6 @@
 {
     "name": "eribloo/laravel-model-snapshots",
     "description": "Laravel package for storing model versions",
-    "version": "0.1.0",
     "keywords": [
         "EriBloo",
         "laravel",
