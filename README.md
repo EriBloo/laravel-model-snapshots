@@ -7,9 +7,9 @@
 
 This package allows creating snapshots of models.
 
-While a typical approach of adding a `version` column is often enough when there is a need of versioning models,
-it may lead to unnecessary cluttering of tables.
-This package tries to mitigate those issues by storing snapshots in separate table.
+While a typical approach of adding a version column is often enough when there is a need of versioning models,
+this package stores snapshots in dedicated table. This provides better control over snapshotting process and keeps your
+tables clean.
 
 Package provides simple function for storing model snapshot:
 
