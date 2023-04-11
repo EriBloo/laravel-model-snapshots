@@ -66,8 +66,9 @@ snapshot(Document::find(1))->persist();
 
 This will snapshot model using default options defined in `EriBloo\LaravelModelSnapshots\SnapshotOptions` class:
 
-- set version with `versionist` class defined in config
+- set version with Versionist class defined in config
 - snapshot all attributes, excluding primary key and hidden
+- it won't create snapshot if other snapshot with the same stored attributes already exists
 
 ### Snapshot options
 
@@ -88,17 +89,25 @@ snapshot(Document::find(1))
     ->persist();
 ```
 
-`usingOptions` method accepts `SnapshotOptions` object or `Closure`.
-If `Closure` is provided it will receive current options as its first argument.
+`usingOptions` method accepts SnapshotOptions object or Closure.
+If Closure is provided it will receive current options as its first argument.
 
 Configurable options include:
 
 ```php
-SnapshotOptions::defaults() // first initialize options with default values
-    ->withVersionist(new CustomVersionist()) // accepts VersionistInterface|Closure(VersionistInterface): VersionistInterface
+SnapshotOptions::defaults()
+    ->withVersionist(new CustomVersionist())
     ->snapshotExcept(['private_attribute'])
-    ->snapshotHidden(true);
+    ->snapshotHidden(true)
+    ->snapshotDuplicates(true);
 ```
+
+- `defaults()` - base static method for initializing options
+- `withVersionist(VersionistInterface|Closure)` - set Versionist used at runtime, when Closure is provided it will
+  receive current Versionist as it's first argument
+- `snapshotExcept(array)` - exclude attributes from being stored
+- `snapshotHidden(bool)` - store hidden attributes
+- `snapshotDuplicates(bool)` - force snapshot even if the same already exists
 
 ### Versionist
 
@@ -154,6 +163,15 @@ snapshot(Document::find(1))
         )
     )
     ->persist();
+
+// or
+snapshot(Document::find(1))
+    ->usingOptions(
+        fn (SnapshotOptions $options) => $options->withVerionist(
+            (new SemanticVersionist)->snapshotMajor()
+        )
+    )
+    ->persist();
 ```
 
 ### Restoring
@@ -162,7 +180,7 @@ Snapshots provide `restore()` method that reverts original model to its snapshot
 
 ### Traits
 
-While no trait is needed to make a snapshot, package provides 2 helper traits:
+While no trait is needed to make a snapshot, package provides 2 helper traits for retrieving snapshots:
 
 - `HasSnapshots` - provides `snapshots()` relationship for retrieving stored snapshots as well as few getters:
     - `getLatestSnapshot()`
