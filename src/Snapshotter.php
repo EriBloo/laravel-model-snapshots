@@ -38,6 +38,13 @@ class Snapshotter
         return $this;
     }
 
+    public function description(?string $description): static
+    {
+        $this->snapshot->setAttribute('description', $description);
+
+        return $this;
+    }
+
     /**
      * @throws IncompatibleVersionist
      */
