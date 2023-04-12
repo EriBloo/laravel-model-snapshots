@@ -67,16 +67,19 @@ class Snapshotter
         $latestSnapshot = $this->getLatestSnapshot();
         $versionist = $this->options->versionist;
 
-        if ($latestSnapshot && ($previous = data_get($latestSnapshot->getOptions(), 'versionist')) !== $versionist::class) {
+        if ($latestSnapshot
+            && ($previous = data_get($latestSnapshot->getAttribute('options'), 'versionist')) !== $versionist::class
+        ) {
             throw IncompatibleVersionist::make(
                 $previous,
                 $versionist::class
             );
         }
 
-        $latestVersion = $latestSnapshot?->getVersion();
+        $latestVersion = $latestSnapshot?->getAttribute('version');
 
-        $this->snapshot->setVersion(
+        $this->snapshot->setAttribute(
+            'version',
             $latestVersion ? $versionist->getNextVersion($latestVersion) : $versionist->getFirstVersion()
         );
     }
@@ -102,7 +105,7 @@ class Snapshotter
         $snapshot = $this->snapshot
             ->newQuery()
             ->whereMorphedTo($this->snapshot->subject(), $this->model->getMorphClass())
-            ->where('stored_attributes', $this->snapshot->getSnapshot())
+            ->where('stored_attributes', $this->snapshot->getAttribute('stored_attributes'))
             ->first();
 
         return $snapshot;
@@ -110,7 +113,7 @@ class Snapshotter
 
     protected function setSnapshotValue(): void
     {
-        $this->snapshot->setSnapshot($this->transformedModel());
+        $this->snapshot->setAttribute('stored_attributes', $this->transformedModel());
     }
 
     protected function transformedModel(): Model
@@ -126,6 +129,6 @@ class Snapshotter
 
     protected function setSnapshotOptions(): void
     {
-        $this->snapshot->setOptions($this->options);
+        $this->snapshot->setAttribute('options', $this->options);
     }
 }

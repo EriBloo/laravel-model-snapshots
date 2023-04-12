@@ -26,16 +26,17 @@ it('creates snapshot', function () {
     $snapshot = $this->model->getLatestSnapshot();
 
     expect($snapshot)
-        ->subject_id->toBe($this->model->id)
-        ->subject_type->toBe($this->model::class)
-        ->and($snapshot?->getSnapshot())
-        ->name->toBe($this->model->name)
-        ->content->toBe($this->model->content);
+        ->getAttribute('subject_id')->toBe($this->model->id)
+        ->getAttribute('subject_type')->toBe($this->model->getMorphClass())
+        ->and($snapshot?->toModel())
+        ->getAttribute('name')->toBe($this->model->getAttribute('name'))
+        ->getAttribute('content')->toBe($this->model->getAttribute('content'));
 });
 
 it('does not create duplicate snapshots when no changes were made', function () {
     snapshot($this->model)->persist();
     $first = $this->model->getLatestSnapshot();
+    Carbon::setTestNow($this->now->addSecond());
     snapshot($this->model)->persist();
     $second = $this->model->getLatestSnapshot();
 
@@ -43,6 +44,7 @@ it('does not create duplicate snapshots when no changes were made', function () 
 });
 
 it('stores proper raw values', function () {
+    /** @var DocumentWithCasts $model */
     $model = DocumentWithCasts::query()->create([
         'date_attr' => Carbon::now(),
         'array_attr' => ['test' => 'test', 'test'],
@@ -55,26 +57,26 @@ it('stores proper raw values', function () {
 
     snapshot($model)->persist();
     /** @var SnapshotInterface $snapshot */
-    $snapshot = $model->getLatestSnapshot();
+    $snapshot = $model->getLatestSnapshot()?->toModel();
 
     foreach ($model->getAttributes() as $property => $value) {
         if ($property === $model->getKeyName()) {
             continue;
         }
-        expect($value)->toEqual($snapshot->getSnapshot()->getAttributes()[$property]);
+        expect($value)->toEqual($snapshot->getAttributes()[$property]);
     }
 });
 
 it('versions properly', function () {
     snapshot($this->model)->persist();
-    expect($this->model->getLatestSnapshot()?->getVersion())
+    expect($this->model->getLatestSnapshot()?->getAttribute('version'))
         ->toBe('1');
 
     Carbon::setTestNow($this->now->addSecond());
     $this->model->update(['name' => Str::random()]);
 
     snapshot($this->model)->persist();
-    expect($this->model->getLatestSnapshot()?->getVersion())
+    expect($this->model->getLatestSnapshot()?->getAttribute('version'))
         ->toBe('2');
 });
 
@@ -86,17 +88,17 @@ it('creates proper relations with snapshots', function () {
     $snapshot = $this->model->getLatestSnapshot();
     $test->documentSnapshotValues()->attach($snapshot?->id);
     expect($test->documentSnapshotValues()->first())
-        ->name->toBe($snapshot?->getSnapshot()->name)
-        ->content->toBe($snapshot?->getSnapshot()->content)
+        ->getAttribute('name')->toBe($snapshot?->toModel()->getAttribute('name'))
+        ->getAttribute('content')->toBe($snapshot?->toModel()->getAttribute('content'))
         ->and($test->documentSnapshots()->first())
         ->toBeInstanceOf(Snapshot::class)
-        ->getVersion()->toBe('1')
+        ->getAttribute('version')->toBe('1')
         ->and($test->documentSnapshotValue()->first())
-        ->name->toBe($snapshot?->getSnapshot()->name)
-        ->content->toBe($snapshot?->getSnapshot()->content)
+        ->getAttribute('name')->toBe($snapshot?->toModel()->getAttribute('name'))
+        ->getAttribute('content')->toBe($snapshot?->toModel()->getAttribute('content'))
         ->and($test->documentSnapshot()->first())
         ->toBeInstanceOf(Snapshot::class)
-        ->getVersion()->toBe('1');
+        ->getAttribute('version')->toBe('1');
 });
 
 it('returns correct snapshots by version and date', function () {
@@ -107,11 +109,11 @@ it('returns correct snapshots by version and date', function () {
     }
 
     expect($this->model->getSnapshotByVersion('7'))
-        ->getVersion()->toBe('7')
-        ->created_at->toDateTimeString()->toBe(Carbon::make($this->now->addMinutes(10 * 6))?->toDateTimeString())
+        ->getAttribute('version')->toBe('7')
+        ->getAttribute('created_at')->toDateTimeString()->toBe(Carbon::make($this->now->addMinutes(10 * 6))?->toDateTimeString())
         ->and($this->model->getSnapshotByDate($this->now->addMinutes(10 * 4 + 5)))
-        ->getVersion()->toBe('5')
-        ->created_at->toDateTimeString()->toBe(Carbon::make($this->now->addMinutes(10 * 4))?->toDateTimeString());
+        ->getAttribute('version')->toBe('5')
+        ->getAttribute('created_at')->toDateTimeString()->toBe(Carbon::make($this->now->addMinutes(10 * 4))?->toDateTimeString());
 });
 
 it('properly versions with versionist set at runtime', function () {
@@ -119,14 +121,14 @@ it('properly versions with versionist set at runtime', function () {
 
     snapshot($this->model)->usingOptions(SnapshotOptions::defaults()->withVersionist($versionist))->persist();
     expect($this->model->getLatestSnapshot())
-        ->getVersion()->toBe('0.1.0');
+        ->getAttribute('version')->toBe('0.1.0');
 
     Carbon::setTestNow($this->now->addSeconds(1));
     $this->model->update(['name' => Str::random()]);
 
     snapshot($this->model)->usingOptions(SnapshotOptions::defaults()->withVersionist($versionist))->persist();
     expect($this->model->getLatestSnapshot())
-        ->getVersion()->toBe('0.2.0');
+        ->getAttribute('version')->toBe('0.2.0');
     $this->model->update(['name' => Str::random()]);
 
     Carbon::setTestNow($this->now->addSeconds(2));
@@ -134,21 +136,21 @@ it('properly versions with versionist set at runtime', function () {
 
     snapshot($this->model)->usingOptions(SnapshotOptions::defaults()->withVersionist($versionist->incrementMajor()))->persist();
     expect($this->model->getLatestSnapshot())
-        ->getVersion()->toBe('1.0.0');
+        ->getAttribute('version')->toBe('1.0.0');
 
     Carbon::setTestNow($this->now->addSeconds(3));
     $this->model->update(['name' => Str::random()]);
 
     snapshot($this->model)->usingOptions(SnapshotOptions::defaults()->withVersionist($versionist->incrementPatch()))->persist();
     expect($this->model->getLatestSnapshot())
-        ->getVersion()->toBe('1.0.1');
+        ->getAttribute('version')->toBe('1.0.1');
 
     Carbon::setTestNow($this->now->addSeconds(4));
     $this->model->update(['name' => Str::random()]);
 
     snapshot($this->model)->usingOptions(SnapshotOptions::defaults()->withVersionist($versionist->incrementMinor()))->persist();
     expect($this->model->getLatestSnapshot())
-        ->getVersion()->toBe('1.1.0');
+        ->getAttribute('version')->toBe('1.1.0');
 });
 
 it('throws when incompatible versionist is used', function () {

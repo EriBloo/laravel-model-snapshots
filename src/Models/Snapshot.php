@@ -29,12 +29,8 @@ class Snapshot extends Model implements SnapshotInterface
     public function storedAttributes(): Attribute
     {
         return Attribute::make(
-            get: static function (string $value, $attributes): Model {
-                /** @var Model $model */
-                $model = new $attributes['subject_type']();
-                $model->setRawAttributes(json_decode($value, true, 512, JSON_THROW_ON_ERROR));
-
-                return $model;
+            get: static function (string $value): array {
+                return json_decode($value, true, 512, JSON_THROW_ON_ERROR);
             },
             set: static function (Model $model): string {
                 return json_encode($model->getAttributes(), JSON_THROW_ON_ERROR);
@@ -57,41 +53,20 @@ class Snapshot extends Model implements SnapshotInterface
         );
     }
 
-    public function getSnapshot(): Model
+    public function toModel(bool $fillExcludedAttributes = false): Model
     {
-        return $this->stored_attributes;
-    }
+        /** @var Model $model */
+        $model = $fillExcludedAttributes ? $this->subject()->firstOrFail()->replicate() : new ($this->getAttribute('subject_type'));
+        $model->setRawAttributes($this->getAttribute('stored_attributes'));
 
-    public function setSnapshot(Model $model): void
-    {
-        $this->stored_attributes = $model;
-    }
-
-    public function getVersion(): string
-    {
-        return $this->version;
-    }
-
-    public function setVersion(string $version): void
-    {
-        $this->version = $version;
-    }
-
-    public function getOptions(): array
-    {
-        return $this->options;
-    }
-
-    public function setOptions(SnapshotOptions $options): void
-    {
-        $this->options = $options;
+        return $model;
     }
 
     public function restore(): Model
     {
         $model = $this->subject()->firstOrFail();
 
-        $model->setRawAttributes($this->getSnapshot()->getAttributes());
+        $model->setRawAttributes($this->getAttribute('stored_attributes'));
         $model->save();
 
         event(new SnapshotRestored($this, $model));

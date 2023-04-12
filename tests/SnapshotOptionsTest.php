@@ -17,19 +17,19 @@ beforeEach(function () {
 it('uses custom versionist', function () {
     snapshot($this->model)->persist();
 
-    expect($this->model->getLatestSnapshot()->getVersion())->toBe('0.1.0');
+    expect($this->model->getLatestSnapshot()->getAttribute('version'))->toBe('0.1.0');
 });
 
 it('excludes attributes', function () {
     snapshot($this->model)->persist();
 
-    expect($this->model->getLatestSnapshot()->getSnapshot()->name)->toBeNull();
+    expect($this->model->getLatestSnapshot()->toModel()->getAttribute('name'))->toBeNull();
 });
 
 it('can snapshot hidden', function () {
     snapshot($this->model)->persist();
 
-    expect($this->model->getLatestSnapshot()->getSnapshot()->content)->not()->toBeNull();
+    expect($this->model->getLatestSnapshot()->toModel()->getAttribute('content'))->not()->toBeNull();
 });
 
 it('can force snapshotting duplicates', function () {
