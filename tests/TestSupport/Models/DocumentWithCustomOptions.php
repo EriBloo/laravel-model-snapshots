@@ -21,8 +21,6 @@ class DocumentWithCustomOptions extends Model
 {
     use HasSnapshots;
 
-    public $timestamps = false;
-
     protected $table = 'documents';
 
     protected $fillable = [

@@ -14,8 +14,6 @@ class DocumentConsumer extends Model
 {
     use HasSnapshotRelations;
 
-    public $timestamps = false;
-
     protected $fillable = [
         'name',
     ];

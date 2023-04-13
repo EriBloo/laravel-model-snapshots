@@ -40,11 +40,13 @@ class TestCase extends Orchestra
             $table->id();
             $table->string('name');
             $table->text('content');
+            $table->timestamps();
         });
 
         Schema::create('document_consumers', static function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->timestamps();
         });
 
         Schema::create('cast_documents', static function (Blueprint $table) {
@@ -56,6 +58,7 @@ class TestCase extends Orchestra
             $table->string('accessor_attr');
             $table->string('mutator_attr');
             $table->string('both_attr');
+            $table->timestamps();
         });
     }
 
