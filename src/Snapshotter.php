@@ -125,10 +125,9 @@ class Snapshotter
 
     protected function transformedModel(): Model
     {
-        $replicate = $this->model->replicate($this->options->snapshotExcept);
-        if ($this->options->snapshotHidden) {
-            $replicate->setHidden([]);
-        }
+        $replicate = $this->model->replicate(
+            array_merge($this->options->snapshotExcept, $this->options->snapshotHidden ? [] : $this->model->getHidden())
+        );
         $replicate->unsetRelations();
 
         return $replicate;
