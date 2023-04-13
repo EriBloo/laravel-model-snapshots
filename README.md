@@ -44,12 +44,12 @@ This is the contents of the published config file:
 return [
 
     /**
-     * Snapshot class used. Must implement EriBloo\LaravelModelSnapshots\Contracts\SnapshotInterface interface.
+     * Snapshot class used. Must implement EriBloo\LaravelModelSnapshots\Contracts\Snapshot interface.
      */
     'snapshot_class' => EriBloo\LaravelModelSnapshots\Models\Snapshot::class,
 
     /**
-     * Versionist class used. Must implement EriBloo\LaravelModelSnapshots\Contracts\VersionistInterface interface.
+     * Versionist class used. Must implement EriBloo\LaravelModelSnapshots\Contracts\Versionist interface.
      */
     'versionist_class' => EriBloo\LaravelModelSnapshots\Support\Versionists\IncrementingVersionist::class,
 
@@ -116,7 +116,7 @@ By default `IncrementingVersionist` is used, which simply increments versions.
 There is also simple `SemanticVersionist` available if you want to keep versions in `x.y.z` format.
 
 If you would like to create your own versionist class it must implement
-`EriBloo\LaravelModelSnapshots\Contracts\VersionistInterface`. There are two methods you must create:
+`EriBloo\LaravelModelSnapshots\Contracts\Versionist`. There are two methods you must create:
 
 ```php
 public function getFirstVersion(): string;

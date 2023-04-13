@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use EriBloo\LaravelModelSnapshots\Contracts\SnapshotInterface;
+use EriBloo\LaravelModelSnapshots\Contracts\Snapshot as SnapshotContract;
 use EriBloo\LaravelModelSnapshots\Exceptions\IncompatibleVersionist;
 use EriBloo\LaravelModelSnapshots\Models\Snapshot;
 use EriBloo\LaravelModelSnapshots\SnapshotOptions;
@@ -56,7 +56,7 @@ it('stores proper raw values', function () {
     ]);
 
     snapshot($model)->persist();
-    /** @var SnapshotInterface $snapshot */
+    /** @var SnapshotContract $snapshot */
     $snapshot = $model->getLatestSnapshot()?->toModel();
 
     foreach ($model->getAttributes() as $property => $value) {
@@ -170,7 +170,7 @@ it('properly restores model', function () {
 
     expect($this->model->toArray())->not()->toMatchArray($this->attributes);
 
-    /** @var SnapshotInterface $snapshot */
+    /** @var Snapshot $snapshot */
     $snapshot = $this->model->getLatestSnapshot();
     $snapshot->restore();
     $this->model->refresh();

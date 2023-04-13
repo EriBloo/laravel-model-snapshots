@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace EriBloo\LaravelModelSnapshots\Support\Versionists;
 
-use EriBloo\LaravelModelSnapshots\Contracts\VersionistInterface;
+use EriBloo\LaravelModelSnapshots\Contracts\Versionist as VersionistContract;
 
-class IncrementingVersionist implements VersionistInterface
+class IncrementingVersionist implements VersionistContract
 {
     public function getFirstVersion(): string
     {

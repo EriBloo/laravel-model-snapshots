@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace EriBloo\LaravelModelSnapshots\Support\Versionists;
 
-use EriBloo\LaravelModelSnapshots\Contracts\VersionistInterface;
+use EriBloo\LaravelModelSnapshots\Contracts\Versionist as VersionistContract;
 
-class SemanticVersionist implements VersionistInterface
+class SemanticVersionist implements VersionistContract
 {
     /**
      * @var int<0, 2>

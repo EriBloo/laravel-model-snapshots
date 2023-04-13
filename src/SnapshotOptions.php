@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace EriBloo\LaravelModelSnapshots;
 
 use Closure;
-use EriBloo\LaravelModelSnapshots\Contracts\VersionistInterface;
+use EriBloo\LaravelModelSnapshots\Contracts\Versionist as VersionistContract;
 
 class SnapshotOptions
 {
-    public VersionistInterface $versionist;
+    public VersionistContract $versionist;
 
     /**
      * @var array<int, string>
@@ -22,7 +22,7 @@ class SnapshotOptions
 
     protected function __construct()
     {
-        $this->versionist = app(VersionistInterface::class);
+        $this->versionist = app(VersionistContract::class);
     }
 
     public static function defaults(): self
@@ -31,10 +31,10 @@ class SnapshotOptions
     }
 
     /**
-     * @param  VersionistInterface|Closure(VersionistInterface): VersionistInterface  $versionist
+     * @param  VersionistContract|Closure(VersionistContract): VersionistContract  $versionist
      * @return $this
      */
-    public function withVersionist(VersionistInterface|Closure $versionist): static
+    public function withVersionist(VersionistContract|Closure $versionist): static
     {
         $this->versionist = $versionist instanceof Closure ? $versionist($this->versionist) : $versionist;
 

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace EriBloo\LaravelModelSnapshots\Events;
 
-use EriBloo\LaravelModelSnapshots\Contracts\SnapshotInterface;
+use EriBloo\LaravelModelSnapshots\Contracts\Snapshot as SnapshotContract;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
@@ -18,7 +18,7 @@ class SnapshotPersisted
      * Create a new event instance.
      */
     public function __construct(
-        public readonly SnapshotInterface $snapshot,
+        public readonly SnapshotContract $snapshot,
         public readonly Model $model,
     ) {
     }

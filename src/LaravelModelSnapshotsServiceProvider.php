@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace EriBloo\LaravelModelSnapshots;
 
-use EriBloo\LaravelModelSnapshots\Contracts\SnapshotInterface;
-use EriBloo\LaravelModelSnapshots\Contracts\VersionistInterface;
+use EriBloo\LaravelModelSnapshots\Contracts\Snapshot as SnapshotContract;
+use EriBloo\LaravelModelSnapshots\Contracts\Versionist as VersionistContract;
 use EriBloo\LaravelModelSnapshots\Models\Snapshot;
 use EriBloo\LaravelModelSnapshots\Support\Versionists\IncrementingVersionist;
 use Spatie\LaravelPackageTools\Package;
@@ -29,11 +29,11 @@ class LaravelModelSnapshotsServiceProvider extends PackageServiceProvider
     public function packageBooted(): void
     {
         $this->app->bind(
-            VersionistInterface::class,
+            VersionistContract::class,
             config('model-snapshots.versionist_class', IncrementingVersionist::class)
         );
         $this->app->bind(
-            SnapshotInterface::class,
+            SnapshotContract::class,
             config('model-snapshots.snapshot_class', Snapshot::class)
         );
     }

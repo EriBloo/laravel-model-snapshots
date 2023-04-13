@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace EriBloo\LaravelModelSnapshots;
 
 use Closure;
-use EriBloo\LaravelModelSnapshots\Contracts\SnapshotInterface;
+use EriBloo\LaravelModelSnapshots\Contracts\Snapshot as SnapshotContract;
 use EriBloo\LaravelModelSnapshots\Events\SnapshotPersisted;
 use EriBloo\LaravelModelSnapshots\Exceptions\IncompatibleVersionist;
 use Illuminate\Database\Eloquent\Model;
@@ -19,13 +19,13 @@ class Snapshotter
 
     protected SnapshotOptions $options;
 
-    protected SnapshotInterface $snapshot;
+    protected SnapshotContract $snapshot;
 
     public function __construct(protected Model $model)
     {
         $this->options = method_exists($this->model, 'getSnapshotOptions') ?
             $this->model->getSnapshotOptions() : SnapshotOptions::defaults();
-        $this->snapshot = app(SnapshotInterface::class);
+        $this->snapshot = app(SnapshotContract::class);
     }
 
     /**
@@ -49,7 +49,7 @@ class Snapshotter
     /**
      * @throws IncompatibleVersionist
      */
-    public function persist(): SnapshotInterface
+    public function persist(): SnapshotContract
     {
         $this->snapshot->subject()->associate($this->model);
         $this->setSnapshotVersion();
@@ -95,9 +95,9 @@ class Snapshotter
     /**
      * Returns last snapshot.
      */
-    protected function getLatestSnapshot(): SnapshotInterface|null
+    protected function getLatestSnapshot(): SnapshotContract|null
     {
-        /** @var SnapshotInterface|null $snapshot */
+        /** @var SnapshotContract|null $snapshot */
         $snapshot = $this->snapshot
             ->newQuery()
             ->whereMorphedTo($this->snapshot->subject(), $this->model->getMorphClass())
@@ -107,9 +107,9 @@ class Snapshotter
         return $snapshot;
     }
 
-    protected function findMatchingSnapshot(): SnapshotInterface|null
+    protected function findMatchingSnapshot(): SnapshotContract|null
     {
-        /** @var SnapshotInterface|null $snapshot */
+        /** @var SnapshotContract|null $snapshot */
         $snapshot = $this->snapshot
             ->newQuery()
             ->whereMorphedTo($this->snapshot->subject(), $this->model->getMorphClass())

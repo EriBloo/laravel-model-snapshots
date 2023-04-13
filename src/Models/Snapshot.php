@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace EriBloo\LaravelModelSnapshots\Models;
 
 use Carbon\Carbon;
-use EriBloo\LaravelModelSnapshots\Contracts\SnapshotInterface;
+use EriBloo\LaravelModelSnapshots\Contracts\Snapshot as SnapshotContract;
 use EriBloo\LaravelModelSnapshots\Events\SnapshotRestored;
 use EriBloo\LaravelModelSnapshots\SnapshotOptions;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -22,7 +22,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  * @property-read Carbon $created_at
  * @property-read Carbon $updated_at
  */
-class Snapshot extends Model implements SnapshotInterface
+class Snapshot extends Model implements SnapshotContract
 {
     protected $table = 'model_snapshots';
 

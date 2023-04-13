@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 /**
  * @mixin Model
  */
-interface SnapshotInterface
+interface Snapshot
 {
     public function subject(): MorphTo;
 

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace EriBloo\LaravelModelSnapshots\Relations;
 
-use EriBloo\LaravelModelSnapshots\Contracts\SnapshotInterface;
+use EriBloo\LaravelModelSnapshots\Contracts\Snapshot as SnapshotContract;
 use EriBloo\LaravelModelSnapshots\Models\Snapshot;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -50,7 +50,7 @@ class MorphSnapshotModel extends MorphToMany
     public function get($columns = ['*']): Collection
     {
         return parent::get(['model_snapshots.subject_type', 'model_snapshots.stored_attributes'])
-            ->map(fn (SnapshotInterface $snapshot) => $snapshot->toModel());
+            ->map(fn (SnapshotContract $snapshot) => $snapshot->toModel());
     }
 
     /**
