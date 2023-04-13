@@ -66,11 +66,32 @@ class Snapshot extends Model implements SnapshotInterface
     public function restore(): Model
     {
         $model = $this->subject()->firstOrFail();
-
         $model->setRawAttributes($this->getAttribute('stored_attributes'));
         $model->save();
 
         event(new SnapshotRestored($this, $model));
+
+        return $model;
+    }
+
+    public function restoreAsNew(bool $duplicateSnapshotHistory = false): Model
+    {
+        $original = $this->subject()->firstOrFail();
+        $model = $original->replicate();
+        $model->setRawAttributes($this->getAttribute('stored_attributes'));
+        $model->save();
+
+        if ($duplicateSnapshotHistory) {
+            $this->newQuery()
+                ->whereMorphedTo($this->subject(), $original->getMorphClass())
+                ->whereDate(self::CREATED_AT, '<=', $this->getAttribute(self::CREATED_AT))
+                ->get()
+                ->each(function (self $snapshot) use ($model) {
+                    $replicate = $snapshot->replicate();
+                    $replicate->subject()->associate($model);
+                    $replicate->save();
+                });
+        }
 
         return $model;
     }

@@ -40,7 +40,7 @@ it('does not create duplicate snapshots when no changes were made', function () 
     snapshot($this->model)->persist();
     $second = $this->model->getLatestSnapshot();
 
-    expect($first)->getKey()->toBe($second->getKey());
+    expect($first)->is($second)->toBeTrue();
 });
 
 it('stores proper raw values', function () {
@@ -176,4 +176,20 @@ it('properly restores model', function () {
     $this->model->refresh();
 
     expect($this->model->toArray())->toMatchArray($this->attributes);
+});
+
+it('properly restores as new model', function () {
+    snapshot($this->model)->persist();
+    Carbon::setTestNow($this->now->addSecond());
+    $this->model->getLatestSnapshot()->restoreAsNew();
+
+    expect($this->model)->is($this->model->newQuery()->latest()->first())->toBeFalse();
+});
+
+it('properly restores as new model with snapshots', function () {
+    snapshot($this->model)->persist();
+    Carbon::setTestNow($this->now->addSecond());
+    $this->model->getLatestSnapshot()->restoreAsNew(true);
+
+    expect($this->model->newQuery()->latest()->first()?->getLatestSnapshot())->not()->toBeFalsy();
 });

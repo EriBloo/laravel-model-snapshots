@@ -17,4 +17,6 @@ interface SnapshotInterface
     public function toModel(bool $fillExcludedAttributes = false): Model;
 
     public function restore(): Model;
+
+    public function restoreAsNew(bool $duplicateSnapshotHistory = false): Model;
 }
