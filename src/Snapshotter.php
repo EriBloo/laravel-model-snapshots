@@ -23,7 +23,8 @@ class Snapshotter
 
     public function __construct(protected Model $model)
     {
-        $this->options = method_exists($this->model, 'getSnapshotOptions') ? $this->model->getSnapshotOptions() : SnapshotOptions::defaults();
+        $this->options = method_exists($this->model, 'getSnapshotOptions') ?
+            $this->model->getSnapshotOptions() : SnapshotOptions::defaults();
         $this->snapshot = app(SnapshotInterface::class);
     }
 

@@ -56,7 +56,8 @@ class Snapshot extends Model implements SnapshotInterface
     public function toModel(bool $fillExcludedAttributes = false): Model
     {
         /** @var Model $model */
-        $model = $fillExcludedAttributes ? $this->subject()->firstOrFail()->replicate() : new ($this->getAttribute('subject_type'));
+        $model = $fillExcludedAttributes ?
+            $this->subject()->firstOrFail()->replicate() : new ($this->getAttribute('subject_type'));
         $model->setRawAttributes($this->getAttribute('stored_attributes'));
 
         return $model;
