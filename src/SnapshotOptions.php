@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace EriBloo\LaravelModelSnapshots;
 
-use Closure;
 use EriBloo\LaravelModelSnapshots\Contracts\Versionist as VersionistContract;
 
 class SnapshotOptions
@@ -30,13 +29,9 @@ class SnapshotOptions
         return new self();
     }
 
-    /**
-     * @param  VersionistContract|Closure(VersionistContract): VersionistContract  $versionist
-     * @return $this
-     */
-    public function withVersionist(VersionistContract|Closure $versionist): static
+    public function withVersionist(VersionistContract $versionist): static
     {
-        $this->versionist = $versionist instanceof Closure ? $versionist($this->versionist) : $versionist;
+        $this->versionist = $versionist;
 
         return $this;
     }

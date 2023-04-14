@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace EriBloo\LaravelModelSnapshots;
 
-use Closure;
+use EriBloo\LaravelModelSnapshots\Concerns\SnapshotterSetters;
 use EriBloo\LaravelModelSnapshots\Contracts\Snapshot as SnapshotContract;
 use EriBloo\LaravelModelSnapshots\Events\SnapshotPersisted;
 use EriBloo\LaravelModelSnapshots\Exceptions\IncompatibleVersionist;
@@ -16,6 +16,7 @@ class Snapshotter
 {
     use Conditionable;
     use Macroable;
+    use SnapshotterSetters;
 
     protected SnapshotOptions $options;
 
@@ -28,22 +29,9 @@ class Snapshotter
         $this->snapshot = app(SnapshotContract::class);
     }
 
-    /**
-     * @param  SnapshotOptions|Closure(SnapshotOptions): SnapshotOptions  $options
-     * @return $this
-     */
-    public function usingOptions(SnapshotOptions|Closure $options): static
+    public function getOptions(): SnapshotOptions
     {
-        $this->options = $options instanceof Closure ? $options($this->options) : $options;
-
-        return $this;
-    }
-
-    public function description(?string $description): static
-    {
-        $this->snapshot->setAttribute('description', $description);
-
-        return $this;
+        return $this->options;
     }
 
     /**

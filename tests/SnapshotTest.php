@@ -3,10 +3,7 @@
 declare(strict_types=1);
 
 use EriBloo\LaravelModelSnapshots\Contracts\Snapshot as SnapshotContract;
-use EriBloo\LaravelModelSnapshots\Exceptions\IncompatibleVersionist;
 use EriBloo\LaravelModelSnapshots\Models\Snapshot;
-use EriBloo\LaravelModelSnapshots\SnapshotOptions;
-use EriBloo\LaravelModelSnapshots\Support\Versionists\SemanticVersionist;
 use EriBloo\LaravelModelSnapshots\Tests\TestSupport\Models\Document;
 use EriBloo\LaravelModelSnapshots\Tests\TestSupport\Models\DocumentConsumer;
 use EriBloo\LaravelModelSnapshots\Tests\TestSupport\Models\DocumentWithCasts;
@@ -114,53 +111,6 @@ it('returns correct snapshots by version and date', function () {
         ->and($this->model->getSnapshotByDate($this->now->addMinutes(10 * 4 + 5)))
         ->getAttribute('version')->toBe('5')
         ->getAttribute('created_at')->toDateTimeString()->toBe(Carbon::make($this->now->addMinutes(10 * 4))?->toDateTimeString());
-});
-
-it('properly versions with versionist set at runtime', function () {
-    $versionist = new SemanticVersionist();
-
-    snapshot($this->model)->usingOptions(SnapshotOptions::defaults()->withVersionist($versionist))->persist();
-    expect($this->model->getLatestSnapshot())
-        ->getAttribute('version')->toBe('0.1.0');
-
-    Carbon::setTestNow($this->now->addSeconds(1));
-    $this->model->update(['name' => Str::random()]);
-
-    snapshot($this->model)->usingOptions(SnapshotOptions::defaults()->withVersionist($versionist))->persist();
-    expect($this->model->getLatestSnapshot())
-        ->getAttribute('version')->toBe('0.2.0');
-    $this->model->update(['name' => Str::random()]);
-
-    Carbon::setTestNow($this->now->addSeconds(2));
-    $this->model->update(['name' => Str::random()]);
-
-    snapshot($this->model)->usingOptions(SnapshotOptions::defaults()->withVersionist($versionist->incrementMajor()))->persist();
-    expect($this->model->getLatestSnapshot())
-        ->getAttribute('version')->toBe('1.0.0');
-
-    Carbon::setTestNow($this->now->addSeconds(3));
-    $this->model->update(['name' => Str::random()]);
-
-    snapshot($this->model)->usingOptions(SnapshotOptions::defaults()->withVersionist($versionist->incrementPatch()))->persist();
-    expect($this->model->getLatestSnapshot())
-        ->getAttribute('version')->toBe('1.0.1');
-
-    Carbon::setTestNow($this->now->addSeconds(4));
-    $this->model->update(['name' => Str::random()]);
-
-    snapshot($this->model)->usingOptions(SnapshotOptions::defaults()->withVersionist($versionist->incrementMinor()))->persist();
-    expect($this->model->getLatestSnapshot())
-        ->getAttribute('version')->toBe('1.1.0');
-});
-
-it('throws when incompatible versionist is used', function () {
-    snapshot($this->model)->persist();
-
-    expect(function () {
-        snapshot($this->model)
-            ->usingOptions(SnapshotOptions::defaults()->withVersionist(new SemanticVersionist()))
-            ->persist();
-    })->toThrow(IncompatibleVersionist::class);
 });
 
 it('properly restores model', function () {
