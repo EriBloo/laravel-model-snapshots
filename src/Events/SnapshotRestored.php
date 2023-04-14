@@ -20,6 +20,7 @@ class SnapshotRestored
     public function __construct(
         public readonly SnapshotContract $snapshot,
         public readonly Model $model,
+        public readonly bool $isNew
     ) {
     }
 }

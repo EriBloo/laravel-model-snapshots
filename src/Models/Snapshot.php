@@ -69,7 +69,7 @@ class Snapshot extends Model implements SnapshotContract
         $model->setRawAttributes($this->getAttribute('stored_attributes'));
         $model->save();
 
-        event(new SnapshotRestored($this, $model));
+        event(new SnapshotRestored($this, $model, false));
 
         return $model;
     }
@@ -92,6 +92,8 @@ class Snapshot extends Model implements SnapshotContract
                     $replicate->save();
                 });
         }
+
+        event(new SnapshotRestored($this, $model, true));
 
         return $model;
     }
