@@ -55,9 +55,16 @@ class Snapshot extends Model implements SnapshotContract
 
     public function toModel(bool $fillExcludedAttributes = false): Model
     {
-        /** @var Model $model */
-        $model = $fillExcludedAttributes ?
-            $this->subject()->firstOrFail()->replicate() : new ($this->getAttribute('subject_type'));
+        if ($fillExcludedAttributes) {
+            /** @var Model $model */
+            $model = ($this->relationLoaded('subject')
+                ? $this->getRelation('subject') : $this->subject()->firstOrFail()
+            )->replicate();
+        } else {
+            /** @var Model $model */
+            $model = new ($this->getAttribute('subject_type'));
+        }
+
         $model->setRawAttributes($this->getAttribute('stored_attributes'));
 
         return $model;
@@ -65,7 +72,7 @@ class Snapshot extends Model implements SnapshotContract
 
     public function restore(): Model
     {
-        $model = $this->subject()->firstOrFail();
+        $model = $this->relationLoaded('subject') ? $this->getRelation('subject') : $this->subject()->firstOrFail();
         $model->setRawAttributes($this->getAttribute('stored_attributes'));
         $model->save();
 
@@ -76,14 +83,15 @@ class Snapshot extends Model implements SnapshotContract
 
     public function restoreAsNew(bool $duplicateSnapshotHistory = false): Model
     {
-        $original = $this->subject()->firstOrFail();
-        $model = $original->replicate();
+        $model = ($this->relationLoaded('subject')
+            ? $this->getRelation('subject') : $this->subject()->firstOrFail()
+        )->replicate();
         $model->setRawAttributes($this->getAttribute('stored_attributes'));
         $model->save();
 
         if ($duplicateSnapshotHistory) {
             $this->newQuery()
-                ->whereMorphedTo($this->subject(), $original->getMorphClass())
+                ->whereMorphedTo($this->subject(), $model->getMorphClass())
                 ->whereDate(self::CREATED_AT, '<=', $this->getAttribute(self::CREATED_AT))
                 ->get()
                 ->each(function (self $snapshot) use ($model) {
