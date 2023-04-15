@@ -53,6 +53,11 @@ class Snapshot extends Model implements SnapshotContract
         );
     }
 
+    public function newCollection(array $models = []): SnapshotCollection
+    {
+        return new SnapshotCollection($models);
+    }
+
     public function toModel(bool $fillExcludedAttributes = false): Model
     {
         if ($fillExcludedAttributes) {
