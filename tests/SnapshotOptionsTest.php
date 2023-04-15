@@ -43,7 +43,7 @@ it('can force snapshotting duplicates', function () {
 });
 
 it('properly sets options at runtime', function () {
-    snapshot($this->model)->except([])->withoutHidden()->persist();
+    snapshot($this->model)->setExcept([])->withoutHidden()->persist();
 
     expect($this->model->getLatestSnapshot()->toModel())
         ->getAttribute('content')->toBeNull()

@@ -30,7 +30,7 @@ trait SnapshotterSetters
         return $this;
     }
 
-    public function except(array $except): static
+    public function setExcept(array $except): static
     {
         $this->options->snapshotExcept($except);
 
@@ -40,6 +40,13 @@ trait SnapshotterSetters
     public function appendExcept(array $except): static
     {
         $this->options->snapshotExcept(array_merge($this->options->snapshotExcept, $except));
+
+        return $this;
+    }
+
+    public function removeExcept(array $except): static
+    {
+        $this->options->snapshotExcept(array_diff($this->options->snapshotExcept, $except));
 
         return $this;
     }
