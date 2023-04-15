@@ -34,9 +34,6 @@ class Snapshotter
         return $this->options;
     }
 
-    /**
-     * @throws IncompatibleVersionist
-     */
     public function persist(): SnapshotContract
     {
         $this->snapshot->subject()->associate($this->model);
