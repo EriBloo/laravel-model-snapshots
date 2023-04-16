@@ -5,17 +5,34 @@
 [![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/eribloo/laravel-model-snapshots/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/eribloo/laravel-model-snapshots/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/eribloo/laravel-model-snapshots.svg?style=flat-square)](https://packagist.org/packages/eribloo/laravel-model-snapshots)
 
+## Introduction
+
 This package allows creating snapshots of models.
 
 While a typical approach of adding a version column is often enough when there is a need of versioning models,
 this package stores snapshots in dedicated table. This provides better control over snapshotting process and keeps your
 tables clean.
 
-Package provides simple function for storing model snapshot:
+My motivation while creating this package was to create configurable snapshots only when I need them, in contrast to
+generating new version with every update, while keeping connection to up to date original model.
 
-```php
-snapshot(Document::find(1))->persist();
-```
+## Table of contents
+
+- [Installation](#installation)
+- [Usage](#usage)
+    - [Basics](#basics)
+        - [Creating snapshots](#creating-snapshots)
+        - [Restoring](#restoring)
+        - [Relations](#relations)
+    - [Configuring](#configuring)
+        - [Snapshot Options](#snapshot-options)
+        - [Versionist](#versionist)
+    - [Traits](#traits)
+    - [Events](#events)
+- [Testing](#testing)
+- [Changelog](#changelog)
+- [Credits](#credits)
+- [Licence](#license)
 
 ## Installation
 
@@ -58,6 +75,10 @@ return [
 
 ## Usage
 
+### Basics
+
+#### Creating snapshots
+
 You can create snapshot by using a helper `snapshot()` function:
 
 ```php
@@ -67,12 +88,38 @@ snapshot(Document::find(1))->persist();
 This will snapshot model using default options defined in `EriBloo\LaravelModelSnapshots\SnapshotOptions` class:
 
 - set version with Versionist class defined in config
-- snapshot all attributes, excluding primary key and hidden
-- it won't create snapshot if other snapshot with the same stored attributes already exists
+- snapshot all attributes, excluding primary key, timestamps and hidden
+- it won't create snapshot if other snapshot with the same stored attributes already exists - in such situation matching
+  snapshot will be returned
 
-### Snapshot options
+Each snapshot stores an array of model attributes, options that it was created with, version and optional description.
 
-Options can be overridden either by defining a `getSnapshotOptions()` method on model:
+Snapshots provide `toModel(bool $fillExcludedAttributes = false)` method, that returns model with
+snapshotted attributes. If optional `fillExcludedAttributes` option is true, returned model will use current model
+attributes as a base, if it's false missing attributes will be null.
+
+Accordingly, if you retrieve collection of snapshots you can use its `toModels(bool $fillExcludedAttributes = false)`
+method to map all snapshots to corresponding classes.
+
+#### Restoring
+
+Snapshots can be used to restore models if needed. There are 2 methods available on Snapshot class:
+
+- `restore()` - reverts original model to its snapshotted version
+- `restoreAsNew(bool $duplicateSnapshotHistory = false)` - creates new model rather than reverting original. If
+  `duplicateSnapshotHistory` argument is true all snapshots up to restored will be duplicated and associated with
+  new model
+
+#### Relations
+
+In addition, package provides separate table to store snapshot relations with other models. There are morphToMany and
+morphToOne relations available that return either Snapshots or Models in `HasSnapshotRelations` [trait](#traits).
+
+### Configuring
+
+#### Snapshot options
+
+Options can be defined by creating `getSnapshotOptions()` method on model:
 
 ```php
 public function getSnapshotOptions(): SnapshotOptions
@@ -81,39 +128,28 @@ public function getSnapshotOptions(): SnapshotOptions
 }
 ```
 
-or during snapshot process:
-
-```php
-snapshot(Document::find(1))
-    ->usingOptions(SnapshotOptions::defaults())
-    ->persist();
-```
-
-`usingOptions` method accepts SnapshotOptions object or Closure.
-If Closure is provided it will receive current options as its first argument.
-
 Configurable options include:
 
-```php
-SnapshotOptions::defaults()
-    ->withVersionist(new CustomVersionist())
-    ->snapshotExcept(['private_attribute'])
-    ->snapshotHidden(true)
-    ->snapshotDuplicates(true);
-```
+- `withVersionist(Versionist $versionist)` - set [Versionist](#versionist) used
+- `snapshotExcept(array $exclude)` - exclude attributes from being stored
+- `snapshotHidden(bool $option = true)` - store hidden attributes
+- `snapshotDuplicate(bool $option = true)` - force snapshot even if the same already exists
 
-- `defaults()` - base static method for initializing options
-- `withVersionist(VersionistInterface|Closure)` - set Versionist used at runtime, when Closure is provided it will
-  receive current Versionist as it's first argument
-- `snapshotExcept(array)` - exclude attributes from being stored
-- `snapshotHidden(bool)` - store hidden attributes
-- `snapshotDuplicates(bool)` - force snapshot even if the same already exists
+Most can be later overridden during snapshotting using those methods:
 
-### Versionist
+- `version(Closure $closure)` - Closure that will receive current Versionist object, so you can access and call its
+  methods if needed
+- `description(?string)` - optional short description
+- `setExcept(array $except)`, `appendExcept(array $except)`, `removeExcept(array $except)` - modify excluded attributes
+  list
+- `withHidden()`, `withoutHidden()` - modify if hidden attributes should be snapshotted
+- `forceDuplicate()`, `noDuplicate()` - if snapshot should be forced even if duplicate already exists
+
+#### Versionist
 
 Versionist is a class responsible for determining next snapshot version.
 By default `IncrementingVersionist` is used, which simply increments versions.
-There is also simple `SemanticVersionist` available if you want to keep versions in `x.y.z` format.
+There is also simple `SemanticVersionist` available if you want to keep versions in `major.minor.patch` format.
 
 If you would like to create your own versionist class it must implement
 `EriBloo\LaravelModelSnapshots\Contracts\Versionist`. There are two methods you must create:
@@ -123,60 +159,6 @@ public function getFirstVersion(): string;
 
 public function getNextVersion(string $version): string;
 ```
-
-Please note that all snapshots of single model must use the same Versionist class. So in situation like this:
-
-```php
-$document = Document::find(1);
-
-snapshot($document)
-    ->usingOptions(SnapshotOptions::defaults()->withVersionist(new IncrementingVersionist()))
-    ->persist();
-
-snapshot($document)
-    ->usingOptions(SnapshotOptions::defaults()->withVersionist(new CustomVersionist()))
-    ->persist();
-```
-
-an `EriBloo\LaravelModelSnapshots\Exceptions\IncompatibleVersionist` exception would be thrown.
-
-> Note on `SemanticVersionist`
-
-since this class can increment 3 version parts, it cannot be simply set up in config or in `getSnapshotOptions()` method
-on model.
-(it would result in one part being incremented each time - minor by default, which defeats its purpose).
-
-If you would like to use this Versionist it should be used with `usingOptions` method, eg:
-
-```php
-// in Document model
-public function getSnapshotOptions(): SnapshotOptions
-{
-    return SnapshotOptions::defaults()->withVersionist(new SemanticVersionist());
-}
-
-// later
-snapshot(Document::find(1))
-    ->usingOptions(
-        fn (SnapshotOptions $options) => $options->withVerionist(
-            fn (SemanticVersionist $versionist) => $versionist->incrementMajor()
-        )
-    )
-    ->persist();
-
-// or
-snapshot(Document::find(1))
-    ->usingOptions(
-        fn (SnapshotOptions $options) => $options->withVerionist(
-            (new SemanticVersionist)->snapshotMajor()
-        )
-    )
-    ->persist();
-```
-
-### Restoring
-
-Snapshots provide `restore()` method that reverts original model to its snapshotted version.
 
 ### Traits
 
@@ -189,16 +171,22 @@ While no trait is needed to make a snapshot, package provides 2 helper traits fo
 - `HasSnapshotRelations` - provides relationship methods for creating connections with snapshots:
     - `morphSnapshots(string $snapshotClass)` - helper `morphToMany`
     - `morphSnapshot(string $snapshotClass)` - helper `morphToOne`
-    - `morphSnapshotModels(string $snapshotClass)` - `morphToMany` relation that directly returns snapshotted model
-    - `morphSnapshotModel(string $snapshotClass)` - `morphToOne` version of above
+    - `morphSnapshotAsModels(string $snapshotClass)` - `morphToMany` that return snapshots with `toModels(false)`
+      applied
+    - `morphSnapshotAsModel(string $snapshotClass)` - `morphToOne` version of above
 
 ### Events
 
 There are 2 events that get dispatched:
 
 - `EriBloo\LaravelModelSnapshots\Events\SnapshotPersisted` - dispatched when new snapshot is persisted, but not when
-  duplicate is found
-- `EriBloo\LaravelModelSnapshots\Events\SnapshotRestored` - dispatched when snapshot is restored
+  duplicate is found, contains properties:
+    - snapshot
+    - model
+- `EriBloo\LaravelModelSnapshots\Events\SnapshotRestored` - dispatched when snapshot is restored, contains properties:
+    - snapshot
+    - model
+    - isNew - if `restoreAsNew()` method was used
 
 ## Testing
 
@@ -225,7 +213,8 @@ Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed re
 ## Credits
 
 - [EriBloo](https://github.com/EriBloo)
-- [All Contributors](../../contributors)
+
+[//]: # (- [All Contributors]&#40;../../contributors&#41;)
 
 ## License
 
