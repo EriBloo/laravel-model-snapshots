@@ -20,12 +20,12 @@ class DocumentConsumer extends Model
 
     public function documentSnapshotValues(): MorphSnapshotModels
     {
-        return $this->morphSnapshotModels(Document::class);
+        return $this->morphSnapshotAsModels(Document::class);
     }
 
     public function documentSnapshotValue(): MorphSnapshotModel
     {
-        return $this->morphSnapshotModel(Document::class);
+        return $this->morphSnapshotAsModel(Document::class);
     }
 
     public function documentSnapshots(): MorphToMany

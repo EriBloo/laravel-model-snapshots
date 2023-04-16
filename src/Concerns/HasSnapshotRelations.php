@@ -21,7 +21,7 @@ trait HasSnapshotRelations
     /**
      * @param  class-string  $snapshotClass
      */
-    public function morphSnapshotModels(string $snapshotClass): MorphSnapshotModels
+    public function morphSnapshotAsModels(string $snapshotClass): MorphSnapshotModels
     {
         return (new MorphSnapshotModels($this))->where('model_snapshots.subject_type', $snapshotClass);
     }
@@ -29,7 +29,7 @@ trait HasSnapshotRelations
     /**
      * @param  class-string  $snapshotClass
      */
-    public function morphSnapshotModel(string $snapshotClass): MorphSnapshotModel
+    public function morphSnapshotAsModel(string $snapshotClass): MorphSnapshotModel
     {
         return (new MorphSnapshotModel($this))->where('model_snapshots.subject_type', $snapshotClass);
     }
