@@ -128,6 +128,19 @@ it('properly reverts model', function () {
     expect($this->model->toArray())->toMatchArray($this->attributes);
 });
 
+it('removes newer snapshots after reverting', function () {
+    snapshot($this->model)->commit();
+    Carbon::setTestNow($this->now->addSecond());
+
+    snapshot($this->model)->commit();
+
+    /** @var Snapshot $snapshot */
+    $snapshot = $this->model->getSnapshotByVersion('1');
+    $snapshot->revert();
+
+    expect($this->model->snapshots()->count())->toBe(1);
+});
+
 it('properly branches model', function () {
     snapshot($this->model)->commit();
     Carbon::setTestNow($this->now->addSecond());

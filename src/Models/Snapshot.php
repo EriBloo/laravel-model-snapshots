@@ -81,6 +81,14 @@ class Snapshot extends Model implements SnapshotContract
         $model->setRawAttributes($this->getAttribute('stored_attributes'));
         $model->save();
 
+        $this->newQuery()
+            ->whereMorphedTo($this->subject(), $model->getMorphClass())
+            ->whereDate(self::CREATED_AT, '>', $this->getAttribute(self::CREATED_AT))
+            ->get()
+            ->each(function (self $snapshot) {
+                $snapshot->delete();
+            });
+
         event(new SnapshotRestored($this, $model, false));
 
         return $model;
