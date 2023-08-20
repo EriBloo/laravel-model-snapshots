@@ -149,7 +149,7 @@ Most can be later overridden during snapshotting using those methods:
 
 Versionist is a class responsible for determining next snapshot version.
 By default `IncrementingVersionist` is used, which simply increments versions.
-There is also simple `SemanticVersionist` available if you want to keep versions in `major.minor.patch` format.
+There is also simple `SemanticVersionist` available if you want to keep versions in `major.minor` format.
 
 If you would like to create your own versionist class it must implement
 `EriBloo\LaravelModelSnapshots\Contracts\Versionist`. There are two methods you must create:

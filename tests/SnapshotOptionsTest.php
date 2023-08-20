@@ -19,7 +19,7 @@ beforeEach(function () {
 it('uses custom versionist', function () {
     snapshot($this->model)->commit();
 
-    expect($this->model->getLatestSnapshot()->getAttribute('version'))->toBe('0.1.0');
+    expect($this->model->getLatestSnapshot()->getAttribute('version'))->toBe('0.1');
 });
 
 it('excludes attributes', function () {
@@ -53,14 +53,14 @@ it('properly sets options at runtime', function () {
 it('properly versions with versionist set at runtime', function () {
     snapshot($this->model)->commit();
     expect($this->model->getLatestSnapshot())
-        ->getAttribute('version')->toBe('0.1.0');
+        ->getAttribute('version')->toBe('0.1');
 
     Carbon::setTestNow($this->now->addSeconds(1));
     $this->model->update(['name' => Str::random()]);
 
     snapshot($this->model)->commit();
     expect($this->model->getLatestSnapshot())
-        ->getAttribute('version')->toBe('0.2.0');
+        ->getAttribute('version')->toBe('0.2');
     $this->model->update(['name' => Str::random()]);
 
     Carbon::setTestNow($this->now->addSeconds(2));
@@ -70,23 +70,14 @@ it('properly versions with versionist set at runtime', function () {
         ->version(fn (SemanticVersionist $versionist) => $versionist->incrementMajor())
         ->commit();
     expect($this->model->getLatestSnapshot())
-        ->getAttribute('version')->toBe('1.0.0');
+        ->getAttribute('version')->toBe('1.0');
 
     Carbon::setTestNow($this->now->addSeconds(3));
-    $this->model->update(['name' => Str::random()]);
-
-    snapshot($this->model)
-        ->version(fn (SemanticVersionist $versionist) => $versionist->incrementPatch())
-        ->commit();
-    expect($this->model->getLatestSnapshot())
-        ->getAttribute('version')->toBe('1.0.1');
-
-    Carbon::setTestNow($this->now->addSeconds(4));
     $this->model->update(['name' => Str::random()]);
 
     snapshot($this->model)
         ->version(fn (SemanticVersionist $versionist) => $versionist->incrementMinor())
         ->commit();
     expect($this->model->getLatestSnapshot())
-        ->getAttribute('version')->toBe('1.1.0');
+        ->getAttribute('version')->toBe('1.1');
 });
