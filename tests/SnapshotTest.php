@@ -113,7 +113,7 @@ it('returns correct snapshots by version and date', function () {
         ->getAttribute('created_at')->toDateTimeString()->toBe(Carbon::make($this->now->addMinutes(10 * 4))?->toDateTimeString());
 });
 
-it('properly restores model', function () {
+it('properly reverts model', function () {
     snapshot($this->model)->commit();
 
     $this->model->update(Document::factory()->raw());
@@ -122,24 +122,24 @@ it('properly restores model', function () {
 
     /** @var Snapshot $snapshot */
     $snapshot = $this->model->getLatestSnapshot();
-    $snapshot->restore();
+    $snapshot->revert();
     $this->model->refresh();
 
     expect($this->model->toArray())->toMatchArray($this->attributes);
 });
 
-it('properly restores as new model', function () {
+it('properly branches model', function () {
     snapshot($this->model)->commit();
     Carbon::setTestNow($this->now->addSecond());
-    $this->model->getLatestSnapshot()->restoreAsNew();
+    $this->model->getLatestSnapshot()->branch();
 
     expect($this->model)->is($this->model->newQuery()->latest()->first())->toBeFalse();
 });
 
-it('properly restores as new model with snapshots', function () {
+it('properly branches model with snapshots', function () {
     snapshot($this->model)->commit();
     Carbon::setTestNow($this->now->addSecond());
-    $this->model->getLatestSnapshot()->restoreAsNew(true);
+    $this->model->getLatestSnapshot()->branch(true);
 
     expect($this->model->newQuery()->latest()->first()?->getLatestSnapshot())->not()->toBeFalsy();
 });

@@ -75,7 +75,7 @@ class Snapshot extends Model implements SnapshotContract
         return $model;
     }
 
-    public function restore(): Model
+    public function revert(): Model
     {
         $model = $this->relationLoaded('subject') ? $this->getRelation('subject') : $this->subject()->firstOrFail();
         $model->setRawAttributes($this->getAttribute('stored_attributes'));
@@ -86,7 +86,7 @@ class Snapshot extends Model implements SnapshotContract
         return $model;
     }
 
-    public function restoreAsNew(bool $duplicateSnapshotHistory = false): Model
+    public function branch(bool $duplicateSnapshotHistory = false): Model
     {
         $model = ($this->relationLoaded('subject')
             ? $this->getRelation('subject') : $this->subject()->firstOrFail()
