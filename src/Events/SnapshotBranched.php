@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class SnapshotRestored
+class SnapshotBranched
 {
     use Dispatchable;
     use SerializesModels;
@@ -19,8 +19,7 @@ class SnapshotRestored
      */
     public function __construct(
         public readonly SnapshotContract $snapshot,
-        public readonly Model $model,
-        public readonly bool $isNew
+        public readonly Model $model
     ) {
     }
 }

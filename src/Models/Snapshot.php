@@ -6,7 +6,9 @@ namespace EriBloo\LaravelModelSnapshots\Models;
 
 use Carbon\Carbon;
 use EriBloo\LaravelModelSnapshots\Contracts\Snapshot as SnapshotContract;
-use EriBloo\LaravelModelSnapshots\Events\SnapshotRestored;
+use EriBloo\LaravelModelSnapshots\Events\SnapshotBranched;
+use EriBloo\LaravelModelSnapshots\Events\SnapshotForked;
+use EriBloo\LaravelModelSnapshots\Events\SnapshotReverted;
 use EriBloo\LaravelModelSnapshots\SnapshotOptions;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
@@ -89,12 +91,12 @@ class Snapshot extends Model implements SnapshotContract
                 $snapshot->delete();
             });
 
-        event(new SnapshotRestored($this, $model, false));
+        event(new SnapshotReverted($this, $model));
 
         return $model;
     }
 
-    public function branch(bool $duplicateSnapshotHistory = false): Model
+    public function branch(): Model
     {
         $model = ($this->relationLoaded('subject')
             ? $this->getRelation('subject') : $this->subject()->firstOrFail()
@@ -102,19 +104,30 @@ class Snapshot extends Model implements SnapshotContract
         $model->setRawAttributes($this->getAttribute('stored_attributes'));
         $model->save();
 
-        if ($duplicateSnapshotHistory) {
-            $this->newQuery()
-                ->whereMorphedTo($this->subject(), $model->getMorphClass())
-                ->whereDate(self::CREATED_AT, '<=', $this->getAttribute(self::CREATED_AT))
-                ->get()
-                ->each(function (self $snapshot) use ($model) {
-                    $replicate = $snapshot->replicate();
-                    $replicate->subject()->associate($model);
-                    $replicate->save();
-                });
-        }
+        $this->newQuery()
+            ->whereMorphedTo($this->subject(), $model->getMorphClass())
+            ->whereDate(self::CREATED_AT, '<=', $this->getAttribute(self::CREATED_AT))
+            ->get()
+            ->each(function (self $snapshot) use ($model) {
+                $replicate = $snapshot->replicate();
+                $replicate->subject()->associate($model);
+                $replicate->save();
+            });
 
-        event(new SnapshotRestored($this, $model, true));
+        event(new SnapshotBranched($this, $model));
+
+        return $model;
+    }
+
+    public function fork(): Model
+    {
+        $model = ($this->relationLoaded('subject')
+            ? $this->getRelation('subject') : $this->subject()->firstOrFail()
+        )->replicate();
+        $model->setRawAttributes($this->getAttribute('stored_attributes'));
+        $model->save();
+
+        event(new SnapshotForked($this, $model));
 
         return $model;
     }

@@ -18,5 +18,7 @@ interface Snapshot
 
     public function revert(): Model;
 
-    public function branch(bool $duplicateSnapshotHistory = false): Model;
+    public function branch(): Model;
+
+    public function fork(): Model;
 }

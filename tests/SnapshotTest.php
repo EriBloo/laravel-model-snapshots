@@ -141,7 +141,7 @@ it('removes newer snapshots after reverting', function () {
     expect($this->model->snapshots()->count())->toBe(1);
 });
 
-it('properly branches model', function () {
+it('properly forks model', function () {
     snapshot($this->model)->commit();
     Carbon::setTestNow($this->now->addSecond());
     $this->model->getLatestSnapshot()->branch();
@@ -149,7 +149,7 @@ it('properly branches model', function () {
     expect($this->model)->is($this->model->newQuery()->latest()->first())->toBeFalse();
 });
 
-it('properly branches model with snapshots', function () {
+it('properly branches model', function () {
     snapshot($this->model)->commit();
     Carbon::setTestNow($this->now->addSecond());
     $this->model->getLatestSnapshot()->branch(true);
