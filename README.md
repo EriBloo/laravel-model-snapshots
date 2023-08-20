@@ -82,7 +82,7 @@ return [
 You can create snapshot by using a helper `snapshot()` function:
 
 ```php
-snapshot(Document::find(1))->persist();
+snapshot(Document::find(1))->commit();
 ```
 
 This will snapshot model using default options defined in `EriBloo\LaravelModelSnapshots\SnapshotOptions` class:
@@ -171,19 +171,20 @@ While no trait is needed to make a snapshot, package provides 2 helper traits fo
 - `HasSnapshotRelations` - provides relationship methods for creating connections with snapshots:
     - `morphSnapshots(string $snapshotClass)` - helper `morphToMany`
     - `morphSnapshot(string $snapshotClass)` - helper `morphToOne`
-    - `morphSnapshotAsModels(string $snapshotClass)` - `morphToMany` that return snapshots with `toModels(false)`
+    - `morphSnapshotAsModels(string $snapshotClass)` - `morphToMany` that returns snapshots with `toModels(false)`
       applied
-    - `morphSnapshotAsModel(string $snapshotClass)` - `morphToOne` version of above
+    - `morphSnapshotAsModel(string $snapshotClass)` - `morphToOne` that returns snapshots with `toModel(false)`
+      applied
 
 ### Events
 
 There are 2 events that get dispatched:
 
-- `EriBloo\LaravelModelSnapshots\Events\SnapshotPersisted` - dispatched when new snapshot is persisted, but not when
+- `SnapshotCommitted` - dispatched when new snapshot is committed, but not when
   duplicate is found, contains properties:
     - snapshot
     - model
-- `EriBloo\LaravelModelSnapshots\Events\SnapshotRestored` - dispatched when snapshot is restored, contains properties:
+- `SnapshotRestored` - dispatched when snapshot is restored, contains properties:
     - snapshot
     - model
     - isNew - if `restoreAsNew()` method was used
