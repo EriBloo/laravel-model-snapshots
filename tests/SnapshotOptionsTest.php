@@ -17,33 +17,33 @@ beforeEach(function () {
 });
 
 it('uses custom versionist', function () {
-    snapshot($this->model)->persist();
+    snapshot($this->model)->commit();
 
     expect($this->model->getLatestSnapshot()->getAttribute('version'))->toBe('0.1.0');
 });
 
 it('excludes attributes', function () {
-    snapshot($this->model)->persist();
+    snapshot($this->model)->commit();
 
     expect($this->model->getLatestSnapshot()->toModel()->getAttribute('name'))->toBeNull();
 });
 
 it('can snapshot hidden', function () {
-    snapshot($this->model)->persist();
+    snapshot($this->model)->commit();
 
     expect($this->model->getLatestSnapshot()->toModel()->getAttribute('content'))->not()->toBeNull();
 });
 
 it('can force snapshotting duplicates', function () {
-    snapshot($this->model)->persist();
+    snapshot($this->model)->commit();
     Carbon::setTestNow($this->now->addSecond());
-    snapshot($this->model)->persist();
+    snapshot($this->model)->commit();
 
     expect($this->model->getLatestSnapshot()->getKey())->toBe(2);
 });
 
 it('properly sets options at runtime', function () {
-    snapshot($this->model)->setExcept([])->withoutHidden()->persist();
+    snapshot($this->model)->setExcept([])->withoutHidden()->commit();
 
     expect($this->model->getLatestSnapshot()->toModel())
         ->getAttribute('content')->toBeNull()
@@ -51,14 +51,14 @@ it('properly sets options at runtime', function () {
 });
 
 it('properly versions with versionist set at runtime', function () {
-    snapshot($this->model)->persist();
+    snapshot($this->model)->commit();
     expect($this->model->getLatestSnapshot())
         ->getAttribute('version')->toBe('0.1.0');
 
     Carbon::setTestNow($this->now->addSeconds(1));
     $this->model->update(['name' => Str::random()]);
 
-    snapshot($this->model)->persist();
+    snapshot($this->model)->commit();
     expect($this->model->getLatestSnapshot())
         ->getAttribute('version')->toBe('0.2.0');
     $this->model->update(['name' => Str::random()]);
@@ -68,7 +68,7 @@ it('properly versions with versionist set at runtime', function () {
 
     snapshot($this->model)
         ->version(fn (SemanticVersionist $versionist) => $versionist->incrementMajor())
-        ->persist();
+        ->commit();
     expect($this->model->getLatestSnapshot())
         ->getAttribute('version')->toBe('1.0.0');
 
@@ -77,7 +77,7 @@ it('properly versions with versionist set at runtime', function () {
 
     snapshot($this->model)
         ->version(fn (SemanticVersionist $versionist) => $versionist->incrementPatch())
-        ->persist();
+        ->commit();
     expect($this->model->getLatestSnapshot())
         ->getAttribute('version')->toBe('1.0.1');
 
@@ -86,7 +86,7 @@ it('properly versions with versionist set at runtime', function () {
 
     snapshot($this->model)
         ->version(fn (SemanticVersionist $versionist) => $versionist->incrementMinor())
-        ->persist();
+        ->commit();
     expect($this->model->getLatestSnapshot())
         ->getAttribute('version')->toBe('1.1.0');
 });

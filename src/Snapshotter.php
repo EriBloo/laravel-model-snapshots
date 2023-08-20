@@ -6,7 +6,7 @@ namespace EriBloo\LaravelModelSnapshots;
 
 use EriBloo\LaravelModelSnapshots\Concerns\SnapshotterSetters;
 use EriBloo\LaravelModelSnapshots\Contracts\Snapshot as SnapshotContract;
-use EriBloo\LaravelModelSnapshots\Events\SnapshotPersisted;
+use EriBloo\LaravelModelSnapshots\Events\SnapshotCommitted;
 use EriBloo\LaravelModelSnapshots\Exceptions\IncompatibleVersionist;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Traits\Conditionable;
@@ -34,7 +34,7 @@ class Snapshotter
         return $this->options;
     }
 
-    public function persist(): SnapshotContract
+    public function commit(): SnapshotContract
     {
         $this->snapshot->subject()->associate($this->model);
         $this->setSnapshotVersion();
@@ -46,7 +46,7 @@ class Snapshotter
         } else {
             $this->snapshot->save();
 
-            event(new SnapshotPersisted($this->snapshot, $this->model));
+            event(new SnapshotCommitted($this->snapshot, $this->model));
         }
 
         return $this->snapshot;

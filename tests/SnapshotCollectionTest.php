@@ -17,7 +17,7 @@ beforeEach(function () {
 
 it('properly maps to models', function () {
     for ($i = 0; $i < 10; $i++) {
-        snapshot($this->model)->forceDuplicate()->persist();
+        snapshot($this->model)->forceDuplicate()->commit();
     }
 
     $collection = $this->model->snapshots()->get();

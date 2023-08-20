@@ -19,7 +19,7 @@ beforeEach(function () {
 });
 
 it('creates snapshot', function () {
-    snapshot($this->model)->persist();
+    snapshot($this->model)->commit();
     $snapshot = $this->model->getLatestSnapshot();
 
     expect($snapshot)
@@ -31,10 +31,10 @@ it('creates snapshot', function () {
 });
 
 it('does not create duplicate snapshots when no changes were made', function () {
-    snapshot($this->model)->persist();
+    snapshot($this->model)->commit();
     $first = $this->model->getLatestSnapshot();
     Carbon::setTestNow($this->now->addSecond());
-    snapshot($this->model)->persist();
+    snapshot($this->model)->commit();
     $second = $this->model->getLatestSnapshot();
 
     expect($first)->is($second)->toBeTrue();
@@ -52,7 +52,7 @@ it('stores proper raw values', function () {
         'both_attr' => 'test',
     ]);
 
-    snapshot($model)->persist();
+    snapshot($model)->commit();
     /** @var SnapshotContract $snapshot */
     $snapshot = $model->getLatestSnapshot()?->toModel();
 
@@ -65,14 +65,14 @@ it('stores proper raw values', function () {
 });
 
 it('versions properly', function () {
-    snapshot($this->model)->persist();
+    snapshot($this->model)->commit();
     expect($this->model->getLatestSnapshot()?->getAttribute('version'))
         ->toBe('1');
 
     Carbon::setTestNow($this->now->addSecond());
     $this->model->update(['name' => Str::random()]);
 
-    snapshot($this->model)->persist();
+    snapshot($this->model)->commit();
     expect($this->model->getLatestSnapshot()?->getAttribute('version'))
         ->toBe('2');
 });
@@ -80,7 +80,7 @@ it('versions properly', function () {
 it('creates proper relations with snapshots', function () {
     /** @var DocumentConsumer $test */
     $test = DocumentConsumer::create(['name' => 'Test']);
-    snapshot($this->model)->persist();
+    snapshot($this->model)->commit();
 
     $snapshot = $this->model->getLatestSnapshot();
     $test->documentSnapshotValues()->attach($snapshot?->id);
@@ -100,7 +100,7 @@ it('creates proper relations with snapshots', function () {
 
 it('returns correct snapshots by version and date', function () {
     for ($i = 1; $i <= 10; $i++) {
-        snapshot($this->model)->persist();
+        snapshot($this->model)->commit();
         Carbon::setTestNow($this->now->addMinutes(10 * $i));
         $this->model->update(['name' => Str::random()]);
     }
@@ -114,7 +114,7 @@ it('returns correct snapshots by version and date', function () {
 });
 
 it('properly restores model', function () {
-    snapshot($this->model)->persist();
+    snapshot($this->model)->commit();
 
     $this->model->update(Document::factory()->raw());
 
@@ -129,7 +129,7 @@ it('properly restores model', function () {
 });
 
 it('properly restores as new model', function () {
-    snapshot($this->model)->persist();
+    snapshot($this->model)->commit();
     Carbon::setTestNow($this->now->addSecond());
     $this->model->getLatestSnapshot()->restoreAsNew();
 
@@ -137,7 +137,7 @@ it('properly restores as new model', function () {
 });
 
 it('properly restores as new model with snapshots', function () {
-    snapshot($this->model)->persist();
+    snapshot($this->model)->commit();
     Carbon::setTestNow($this->now->addSecond());
     $this->model->getLatestSnapshot()->restoreAsNew(true);
 
