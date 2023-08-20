@@ -9,13 +9,13 @@ use Illuminate\Database\Eloquent\Collection;
 
 class SnapshotCollection extends Collection
 {
-    public function toModels(bool $fillExcludedAttributes = false): Collection
+    public function toModels(bool $fillExcludedAttributes = false): SnapshotCollection
     {
         if ($fillExcludedAttributes) {
             $this->loadMissing('subject');
         }
 
-        return new Collection(
+        return new SnapshotCollection(
             $this->map(
                 fn (SnapshotContract $snapshot) => $snapshot->toModel($fillExcludedAttributes)
             )
