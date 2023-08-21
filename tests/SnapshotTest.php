@@ -129,10 +129,9 @@ it('properly reverts model', function () {
 });
 
 it('removes newer snapshots after reverting', function () {
-    snapshot($this->model)->commit();
+    snapshot($this->model)->forceDuplicate()->commit();
     Carbon::setTestNow($this->now->addSecond());
-
-    snapshot($this->model)->commit();
+    snapshot($this->model)->forceDuplicate()->commit();
 
     /** @var Snapshot $snapshot */
     $snapshot = $this->model->getSnapshotByVersion('1');
