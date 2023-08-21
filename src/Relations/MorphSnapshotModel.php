@@ -6,16 +6,12 @@ namespace EriBloo\LaravelModelSnapshots\Relations;
 
 use EriBloo\LaravelModelSnapshots\Models\Snapshot;
 use EriBloo\LaravelModelSnapshots\Models\SnapshotCollection;
-use Illuminate\Database\Eloquent\Builder;
+use Fidum\EloquentMorphToOne\MorphToOne;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\Concerns\SupportsDefaultModels;
-use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
-class MorphSnapshotModel extends MorphToMany
+class MorphSnapshotModel extends MorphToOne
 {
-    use SupportsDefaultModels;
-
     public function __construct(Model $parent)
     {
         parent::__construct(
@@ -32,18 +28,6 @@ class MorphSnapshotModel extends MorphToMany
 
     /**
      * {@inheritDoc}
-     */
-    public function initRelation(array $models, $relation): array
-    {
-        foreach ($models as $model) {
-            $model->setRelation($relation, $this->getDefaultFor($model));
-        }
-
-        return $models;
-    }
-
-    /**
-     * {@inheritDoc}
      *
      * @return Collection<int,Model>
      */
@@ -53,21 +37,5 @@ class MorphSnapshotModel extends MorphToMany
         $collection = parent::get(['model_snapshots.subject_type', 'model_snapshots.stored_attributes']);
 
         return $collection->toModels();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getResults()
-    {
-        return $this->first() ?: $this->getDefaultFor($this->getRelated());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function newRelatedInstanceFor(Model $parent): Model|Builder
-    {
-        return $this->related->newInstance();
     }
 }
