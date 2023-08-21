@@ -29,11 +29,21 @@ class Snapshotter
         $this->snapshot = app(SnapshotContract::class);
     }
 
+    /**
+     * Get currently set options.
+     */
     public function getOptions(): SnapshotOptions
     {
         return $this->options;
     }
 
+    /**
+     * Persist snapshot to database.
+     *
+     * If duplicate is found and force option is not set returns found snapshot, otherwise returns persisted snapshot.
+     *
+     * @throws IncompatibleVersionist
+     */
     public function commit(): SnapshotContract
     {
         $this->snapshot->subject()->associate($this->model);

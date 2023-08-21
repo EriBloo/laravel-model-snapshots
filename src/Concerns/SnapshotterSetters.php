@@ -14,6 +14,8 @@ use EriBloo\LaravelModelSnapshots\Snapshotter;
 trait SnapshotterSetters
 {
     /**
+     * Alter version set. Closure receives current Versionist.
+     *
      * @param  Closure(VersionistContract): void  $closure
      */
     public function version(Closure $closure): static
@@ -23,6 +25,11 @@ trait SnapshotterSetters
         return $this;
     }
 
+    /**
+     * Specify optional description o0n snapshot.
+     *
+     * @return $this
+     */
     public function description(?string $description): static
     {
         $this->snapshot->setAttribute('description', $description);
@@ -30,6 +37,11 @@ trait SnapshotterSetters
         return $this;
     }
 
+    /**
+     * Override excluded attributes.
+     *
+     * @return $this
+     */
     public function setExcept(array $except): static
     {
         $this->options->snapshotExcept($except);
@@ -37,6 +49,11 @@ trait SnapshotterSetters
         return $this;
     }
 
+    /**
+     * Add attributes to exclude.
+     *
+     * @return $this
+     */
     public function appendExcept(array $except): static
     {
         $this->options->snapshotExcept(array_merge($this->options->snapshotExcept, $except));
@@ -44,6 +61,11 @@ trait SnapshotterSetters
         return $this;
     }
 
+    /**
+     * Remove attributes from exclude.
+     *
+     * @return $this
+     */
     public function removeExcept(array $except): static
     {
         $this->options->snapshotExcept(array_diff($this->options->snapshotExcept, $except));
@@ -51,6 +73,11 @@ trait SnapshotterSetters
         return $this;
     }
 
+    /**
+     * Do not snapshot hidden attributes.
+     *
+     * @return $this
+     */
     public function withoutHidden(): static
     {
         $this->options->snapshotHidden(false);
@@ -58,6 +85,11 @@ trait SnapshotterSetters
         return $this;
     }
 
+    /**
+     * Snapshot hidden attributes.
+     *
+     * @return $this
+     */
     public function withHidden(): static
     {
         $this->options->snapshotHidden();
@@ -65,6 +97,11 @@ trait SnapshotterSetters
         return $this;
     }
 
+    /**
+     * Create snapshot even if duplicate already exists.
+     *
+     * @return $this
+     */
     public function forceDuplicate(): static
     {
         $this->options->snapshotDuplicate();
@@ -72,6 +109,11 @@ trait SnapshotterSetters
         return $this;
     }
 
+    /**
+     * Do not create snapshot if duplicate is found.
+     *
+     * @return $this
+     */
     public function noDuplicate(): static
     {
         $this->options->snapshotDuplicate(false);
