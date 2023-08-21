@@ -13,6 +13,7 @@ use EriBloo\LaravelModelSnapshots\SnapshotOptions;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Support\Facades\DB;
 
 /**
  * @property-read int $id
@@ -79,17 +80,21 @@ class Snapshot extends Model implements SnapshotContract
 
     public function revert(): Model
     {
-        $model = $this->relationLoaded('subject') ? $this->getRelation('subject') : $this->subject()->firstOrFail();
-        $model->setRawAttributes($this->getAttribute('stored_attributes'));
-        $model->save();
+        /** @var Model $model */
+        $model = DB::transaction(function () {
+            $model = $this->relationLoaded('subject') ? $this->getRelation('subject') : $this->subject()->firstOrFail();
+            $model->setRawAttributes($this->getAttribute('stored_attributes'));
+            $model->save();
 
-        $this->newQuery()
-            ->whereMorphedTo($this->subject(), $model->getMorphClass())
-            ->whereDate(self::CREATED_AT, '>', $this->getAttribute(self::CREATED_AT))
-            ->get()
-            ->each(function (self $snapshot) {
-                $snapshot->delete();
-            });
+            $this->newQuery()
+                ->whereMorphedTo($this->subject(), $model->getMorphClass())
+                ->where(self::CREATED_AT, '>', $this->getAttribute(self::CREATED_AT))
+                ->each(function (self $snapshot) {
+                    $snapshot->delete();
+                });
+
+            return $model;
+        });
 
         event(new SnapshotReverted($this, $model));
 
@@ -98,21 +103,25 @@ class Snapshot extends Model implements SnapshotContract
 
     public function branch(): Model
     {
-        $model = ($this->relationLoaded('subject')
-            ? $this->getRelation('subject') : $this->subject()->firstOrFail()
-        )->replicate();
-        $model->setRawAttributes($this->getAttribute('stored_attributes'));
-        $model->save();
+        /** @var Model $model */
+        $model = DB::transaction(function () {
+            $model = ($this->relationLoaded('subject')
+                ? $this->getRelation('subject') : $this->subject()->firstOrFail()
+            )->replicate();
+            $model->setRawAttributes($this->getAttribute('stored_attributes'));
+            $model->save();
 
-        $this->newQuery()
-            ->whereMorphedTo($this->subject(), $model->getMorphClass())
-            ->whereDate(self::CREATED_AT, '<=', $this->getAttribute(self::CREATED_AT))
-            ->get()
-            ->each(function (self $snapshot) use ($model) {
-                $replicate = $snapshot->replicate();
-                $replicate->subject()->associate($model);
-                $replicate->save();
-            });
+            $this->newQuery()
+                ->whereMorphedTo($this->subject(), $model->getMorphClass())
+                ->where(self::CREATED_AT, '<=', $this->getAttribute(self::CREATED_AT))
+                ->each(function (self $snapshot) use ($model) {
+                    $replicate = $snapshot->replicate();
+                    $replicate->subject()->associate($model);
+                    $replicate->save();
+                });
+
+            return $model;
+        });
 
         event(new SnapshotBranched($this, $model));
 
