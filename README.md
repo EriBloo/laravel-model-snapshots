@@ -14,15 +14,16 @@ this package stores snapshots in dedicated table. This provides better control o
 tables clean.
 
 My motivation while creating this package was to create configurable snapshots only when I need them, in contrast to
-generating new version with every update, while keeping connection to up to date original model.
+generating new version with every update, while keeping connection to up-to-date original model.
 
 ## Table of contents
 
 - [Installation](#installation)
+- [Examples](#examples)
 - [Usage](#usage)
     - [Basics](#basics)
         - [Creating snapshots](#creating-snapshots)
-        - [Restoring](#restoring)
+        - [Reverting, branching and forking snapshots](#reverting-branching-and-forking-snapshots)
         - [Relations](#relations)
     - [Configuring](#configuring)
         - [Snapshot Options](#snapshot-options)
@@ -31,7 +32,6 @@ generating new version with every update, while keeping connection to up to date
     - [Events](#events)
 - [Testing](#testing)
 - [Changelog](#changelog)
-- [Credits](#credits)
 - [Licence](#license)
 
 ## Installation
@@ -94,21 +94,23 @@ This will snapshot model using default options defined in `EriBloo\LaravelModelS
 
 Each snapshot stores an array of model attributes, options that it was created with, version and optional description.
 
-Snapshots provide `toModel(bool $fillExcludedAttributes = false)` method, that returns model with
+Snapshots provide `toModel(bool $fillExcludedAttributes = false)` method, that returns model filled with
 snapshotted attributes. If optional `fillExcludedAttributes` option is true, returned model will use current model
-attributes as a base, if it's false missing attributes will be null.
+attributes as a base, otherwise missing attributes will be null.
 
 Accordingly, if you retrieve collection of snapshots you can use its `toModels(bool $fillExcludedAttributes = false)`
 method to map all snapshots to corresponding classes.
 
-#### Restoring
+#### Reverting, branching and forking snapshots
 
-Snapshots can be used to restore models if needed. There are 2 methods available on Snapshot class:
+Snapshots have 3 helper methods to revert model, or to create a new one, from its snapshot:
 
-- `restore()` - reverts original model to its snapshotted version
-- `restoreAsNew(bool $duplicateSnapshotHistory = false)` - creates new model rather than reverting original. If
-  `duplicateSnapshotHistory` argument is true all snapshots up to restored will be duplicated and associated with
-  new model
+- `revert()` - reverts original model to its snapshotted version, all snapshots created after the one used are deleted
+- `branch()` - creates new model from snapshotted version and duplicates all snapshots up to, and including, the one
+  used, associating them with new model
+- `fork()` - creates new model from snapshotted version with no snapshots history
+
+Attributes excluded from snapshotting will be filled with current model values.
 
 #### Relations
 
@@ -135,11 +137,11 @@ Configurable options include:
 - `snapshotHidden(bool $option = true)` - store hidden attributes
 - `snapshotDuplicate(bool $option = true)` - force snapshot even if the same already exists
 
-Most can be later overridden during snapshotting using those methods:
+Most can be later overridden while snapshotting using those methods:
 
 - `version(Closure $closure)` - Closure that will receive current Versionist object, so you can access and call its
   methods if needed
-- `description(?string)` - optional short description
+- `description(?string)` - add optional short description
 - `setExcept(array $except)`, `appendExcept(array $except)`, `removeExcept(array $except)` - modify excluded attributes
   list
 - `withHidden()`, `withoutHidden()` - modify if hidden attributes should be snapshotted
@@ -148,11 +150,13 @@ Most can be later overridden during snapshotting using those methods:
 #### Versionist
 
 Versionist is a class responsible for determining next snapshot version.
-By default `IncrementingVersionist` is used, which simply increments versions.
-There is also simple `SemanticVersionist` available if you want to keep versions in `major.minor` format.
+There are 2 classes available by default:
+
+- `IncrementingVersionist` - increments versions
+- `SemanticVersionist` - keeps versions in `major.minor` format
 
 If you would like to create your own versionist class it must implement
-`EriBloo\LaravelModelSnapshots\Contracts\Versionist`. There are two methods you must create:
+`EriBloo\LaravelModelSnapshots\Contracts\Versionist` with methods:
 
 ```php
 public function getFirstVersion(): string;
@@ -173,21 +177,17 @@ While no trait is needed to make a snapshot, package provides 2 helper traits fo
     - `morphSnapshot(string $snapshotClass)` - helper `morphToOne`
     - `morphSnapshotAsModels(string $snapshotClass)` - `morphToMany` that returns snapshots with `toModels(false)`
       applied
-    - `morphSnapshotAsModel(string $snapshotClass)` - `morphToOne` that returns snapshots with `toModel(false)`
+    - `morphSnapshotAsModel(string $snapshotClass)` - `morphToOne` that returns snapshot with `toModel(false)`
       applied
 
 ### Events
 
-There are 2 events that get dispatched:
+There are a few events that get dispatched:
 
-- `SnapshotCommitted` - dispatched when new snapshot is committed, but not when
-  duplicate is found, contains properties:
-    - snapshot
-    - model
-- `SnapshotRestored` - dispatched when snapshot is restored, contains properties:
-    - snapshot
-    - model
-    - isNew - if `restoreAsNew()` method was used
+- `SnapshotCommitted` - dispatched when new snapshot is committed, but not when duplicate is found
+- `SnapshotReverted` - dispatched when snapshot is reverted
+- `SnapshotBranched` - dispatched when new snapshot branch is created
+- `SnapshotForked` - dispatched when snapshot is forked
 
 ## Testing
 
@@ -211,9 +211,9 @@ Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed re
 
 [//]: # (Please review [our security policy]&#40;../../security/policy&#41; on how to report security vulnerabilities.)
 
-## Credits
+[//]: # (## Credits)
 
-- [EriBloo](https://github.com/EriBloo)
+[//]: # (- [EriBloo]&#40;https://github.com/EriBloo&#41;)
 
 [//]: # (- [All Contributors]&#40;../../contributors&#41;)
 
