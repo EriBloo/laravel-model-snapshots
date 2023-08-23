@@ -49,14 +49,14 @@ composer require eribloo/laravel-model-snapshots
 You can publish and run the migrations with:
 
 ```bash
-php artisan vendor:publish --tag="laravel-model-snapshots-migrations"
+php artisan vendor:publish --tag="model-snapshots-migrations"
 php artisan migrate
 ```
 
 You can publish the config file with:
 
 ```bash
-php artisan vendor:publish --tag="laravel-model-snapshots-config"
+php artisan vendor:publish --tag="model-snapshots-config"
 ```
 
 This is the contents of the published config file:
