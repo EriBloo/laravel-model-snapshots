@@ -10,7 +10,7 @@ use EriBloo\LaravelModelSnapshots\Events\SnapshotCommitted;
 use EriBloo\LaravelModelSnapshots\Exceptions\IncompatibleVersionist;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Traits\Conditionable;
-use Spatie\Macroable\Macroable;
+use Illuminate\Support\Traits\Macroable;
 
 class Snapshotter
 {
