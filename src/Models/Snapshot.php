@@ -16,14 +16,15 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Facades\DB;
 
 /**
- * @property-read int $id
- * @property int $subject_id
+ * @property-read positive-int $id
+ * @property positive-int $subject_id
  * @property string $subject_type
- * @property Model $stored_attributes
+ * @property array $stored_attributes
  * @property string $version
  * @property SnapshotOptions|array $options;
- * @property-read Carbon $created_at
- * @property-read Carbon $updated_at
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ * @property-read Model $subject
  */
 class Snapshot extends Model implements SnapshotContract
 {
@@ -65,9 +66,7 @@ class Snapshot extends Model implements SnapshotContract
     {
         if ($fillExcludedAttributes) {
             /** @var Model $model */
-            $model = ($this->relationLoaded('subject')
-            ? $this->getRelation('subject') : $this->subject()->firstOrFail()
-            )->replicate();
+            $model = $this->subject->replicate();
         } else {
             /** @var Model $model */
             $model = new ($this->getAttribute('subject_type'));
@@ -82,7 +81,7 @@ class Snapshot extends Model implements SnapshotContract
     {
         /** @var Model $model */
         $model = DB::transaction(function () {
-            $model = $this->relationLoaded('subject') ? $this->getRelation('subject') : $this->subject()->firstOrFail();
+            $model = $this->subject;
             $model->setRawAttributes($this->getAttribute('stored_attributes'));
             $model->save();
 
@@ -105,9 +104,7 @@ class Snapshot extends Model implements SnapshotContract
     {
         /** @var Model $model */
         $model = DB::transaction(function () {
-            $model = ($this->relationLoaded('subject')
-            ? $this->getRelation('subject') : $this->subject()->firstOrFail()
-            )->replicate();
+            $model = $this->subject->replicate();
             $model->setRawAttributes($this->getAttribute('stored_attributes'));
             $model->save();
 
@@ -130,9 +127,7 @@ class Snapshot extends Model implements SnapshotContract
 
     public function fork(): Model
     {
-        $model = ($this->relationLoaded('subject')
-        ? $this->getRelation('subject') : $this->subject()->firstOrFail()
-        )->replicate();
+        $model = $this->subject->replicate();
         $model->setRawAttributes($this->getAttribute('stored_attributes'));
         $model->save();
 
