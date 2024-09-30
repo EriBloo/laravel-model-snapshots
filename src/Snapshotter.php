@@ -70,7 +70,8 @@ class Snapshotter
         $latestSnapshot = $this->getLatestSnapshot();
         $versionist = $this->options->versionist;
 
-        if ($latestSnapshot
+        if (
+            $latestSnapshot
             && ($previous = data_get($latestSnapshot->getAttribute('options'), 'versionist')) !== $versionist::class
         ) {
             throw IncompatibleVersionist::make(
@@ -95,7 +96,8 @@ class Snapshotter
         /** @var SnapshotContract|null $snapshot */
         $snapshot = $this->snapshot
             ->newQuery()
-            ->whereMorphedTo($this->snapshot->subject(), $this->model->getMorphClass())
+            ->where($this->snapshot->subject()->getMorphType(), $this->model->getMorphClass())
+            ->where($this->snapshot->subject()->getForeignKeyName(), $this->model->getKey())
             ->latest()
             ->first();
 
@@ -107,7 +109,7 @@ class Snapshotter
         /** @var SnapshotContract|null $snapshot */
         $snapshot = $this->snapshot
             ->newQuery()
-            ->whereMorphedTo($this->snapshot->subject(), $this->model->getMorphClass())
+            ->where($this->snapshot->subject()->getMorphType(), $this->model->getMorphClass())
             ->where('stored_attributes', $this->snapshot->getAttribute('stored_attributes'))
             ->first();
 

@@ -66,7 +66,7 @@ class Snapshot extends Model implements SnapshotContract
         if ($fillExcludedAttributes) {
             /** @var Model $model */
             $model = ($this->relationLoaded('subject')
-                ? $this->getRelation('subject') : $this->subject()->firstOrFail()
+            ? $this->getRelation('subject') : $this->subject()->firstOrFail()
             )->replicate();
         } else {
             /** @var Model $model */
@@ -87,7 +87,7 @@ class Snapshot extends Model implements SnapshotContract
             $model->save();
 
             $this->newQuery()
-                ->whereMorphedTo($this->subject(), $model->getMorphClass())
+                ->where($this->subject()->getMorphType(), $model->getMorphClass())
                 ->where(self::CREATED_AT, '>', $this->getAttribute(self::CREATED_AT))
                 ->each(function (self $snapshot) {
                     $snapshot->delete();
@@ -106,13 +106,13 @@ class Snapshot extends Model implements SnapshotContract
         /** @var Model $model */
         $model = DB::transaction(function () {
             $model = ($this->relationLoaded('subject')
-                ? $this->getRelation('subject') : $this->subject()->firstOrFail()
+            ? $this->getRelation('subject') : $this->subject()->firstOrFail()
             )->replicate();
             $model->setRawAttributes($this->getAttribute('stored_attributes'));
             $model->save();
 
             $this->newQuery()
-                ->whereMorphedTo($this->subject(), $model->getMorphClass())
+                ->where($this->subject()->getMorphType(), $model->getMorphClass())
                 ->where(self::CREATED_AT, '<=', $this->getAttribute(self::CREATED_AT))
                 ->each(function (self $snapshot) use ($model) {
                     $replicate = $snapshot->replicate();
@@ -131,7 +131,7 @@ class Snapshot extends Model implements SnapshotContract
     public function fork(): Model
     {
         $model = ($this->relationLoaded('subject')
-            ? $this->getRelation('subject') : $this->subject()->firstOrFail()
+        ? $this->getRelation('subject') : $this->subject()->firstOrFail()
         )->replicate();
         $model->setRawAttributes($this->getAttribute('stored_attributes'));
         $model->save();

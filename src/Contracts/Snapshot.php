@@ -17,7 +17,7 @@ interface Snapshot
     /**
      * Returns subject model filled with snapshotted attributes.
      *
-     * @param bool $fillExcludedAttributes if true excluded attributes will be filled with subjects current values
+     * @param  bool  $fillExcludedAttributes if true excluded attributes will be filled with subjects current values
      */
     public function toModel(bool $fillExcludedAttributes = false): Model;
 
